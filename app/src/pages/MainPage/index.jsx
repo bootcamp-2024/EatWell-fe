@@ -2,13 +2,13 @@ import React, { useState, useEffect, useContext } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from "components/Header";
-import LandingPage from "pages/LandingPage";
 import Footer from "components/Footer";
-import LoginPage from "pages/LoginPage";
-import SignupPage from "pages/SignupPage";
-
-import NotFoundPage from "pages/NotFoundPage";
-import ServerErrorPage from "pages/ServerErrorPage";
+import Login from "components/Login";
+import Signup from "components/Signup";
+import Verification from "components/Verification";
+import HomePage from "pages/HomePage";
+import ServerError from "components/ServerError";
+import NotFound from "components/NotFound";
 
 const MainPage = () => {
   return (
@@ -16,9 +16,12 @@ const MainPage = () => {
       <BrowserRouter>
         <Header />
         <Routes>
-          <Route exact path="/" element={<LandingPage />} />
-          <Route exact path="/error" element={<ServerErrorPage />} />
-          <Route path="*" element={<NotFoundPage />} />
+          <Route exact path="/" element={<HomePage />} />
+          <Route exact path="/error" element={<ServerError />} />
+          <Route path="*" element={<NotFound />} />
+          <Route exact path="/verify/:token" element={<Verification />} />
+          <Route exact path="/login" element={<Login />}></Route>
+          <Route exact path="/signup" element={<Signup />} />
         </Routes>
         <Footer />
       </BrowserRouter>

@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import GoogleLoginButton from "components/GoogleLoginButton";
-import authService from "services/auth";
+import authApi from "api/auth";
 import swal from "sweetalert2";
+
+import {
+  validateEmail,
+  validateMinLength,
+  validatePhone,
+} from "utils/validator";
 
 import "./style.css";
 import { useContext } from "react";
@@ -33,7 +39,7 @@ const Signup = () => {
     if (password !== passwordConfirm) {
       swal.fire({
         title: "Error",
-        text: t("userInformation.notMatchingPass"),
+        text: "Mật khẩu xác nhận không khớp",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -42,7 +48,7 @@ const Signup = () => {
     if (!validateEmail(email)) {
       swal.fire({
         title: "Error",
-        text: t("userInformation.enterValidEmail"),
+        text: "Nhập số điện thoại",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -51,7 +57,7 @@ const Signup = () => {
     if (!validateMinLength(password, 6)) {
       swal.fire({
         title: "Error",
-        text: t("userInformation.moreThan6Letters"),
+        text: "Mật khẩu phải từ 6 kí tự trở lên",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -61,7 +67,7 @@ const Signup = () => {
     if (!validatePhone(phone)) {
       swal.fire({
         title: "Error",
-        text: t("userInformation.pleaseEnterValidPhoneNumber"),
+        text: "Vui lòng nhập số điện thoại hợp lệ",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -72,7 +78,7 @@ const Signup = () => {
     if (!acceptTerms) {
       swal.fire({
         title: "Error",
-        text: t("userInformation.pleaseAcceptTerms"),
+        text: "Vui lòng đọc và chấp nhận điều khoản",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -106,7 +112,7 @@ const Signup = () => {
         if (exitcode === 0) {
           swal.fire({
             title: "Success",
-            text: t("signupPage.checkEmail"),
+            text: "Vui lòng kiểm tra email và xác nhận tài khoản",
             icon: "success",
             confirmButtonText: "OK",
           });
@@ -116,7 +122,7 @@ const Signup = () => {
         }
       } else {
         swal.fire({
-          text: t("userInformation.pleaseEnterAll"),
+          text: "Vui lòng điền đầy đủ tất cả các trường",
           icon: "info",
           confirmButtonText: "OK",
         });
@@ -129,7 +135,7 @@ const Signup = () => {
   const handleGoogleSuccess = async (response) => {
     const { credential } = response;
 
-    const result = await authService.googleLogin(credential);
+    const result = await authApi.googleLogin(credential);
     const { exitcode, token } = result.data;
 
     if (exitcode === 0) {
@@ -147,7 +153,7 @@ const Signup = () => {
     <div className="d-flex container flex-column justify-content-center my-4">
       {error && <p className="text-danger">{error}</p>}
       <form className="d-flex flex-column justify-content-center align-items-center form_container col-xl-4 col-md-6 col-xs-12 row">
-        <h2 className="mb-4 color-key">{t("loginPage.signup")}</h2>
+        <h2 className="mb-4 color-key">Đăng kí người dùng</h2>
 
         <div className="signup-input d-flex align-items-center input-group mb-3 p-2">
           <i className="ml-2 fa fa-envelope"></i>
@@ -165,7 +171,7 @@ const Signup = () => {
             name="password"
             type="password"
             autoComplete="on"
-            placeholder={t("userInformation.enterPass")}
+            placeholder="Nhập mật khẩu"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -176,7 +182,7 @@ const Signup = () => {
             name="passwordConfirm"
             type="password"
             autoComplete="on"
-            placeholder={t("userInformation.enterPass")}
+            placeholder="Nhập lại mật khẩu"
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
           />
@@ -185,7 +191,7 @@ const Signup = () => {
           <i className="ml-2 fa fa-user"></i>
           <input
             name="fullname"
-            placeholder={t("userInformation.fullname")}
+            placeholder="Họ tên"
             value={fullname}
             onChange={(e) => setFullname(e.target.value)}
           />
@@ -194,7 +200,7 @@ const Signup = () => {
           <i className="ml-2 fa fa-phone"></i>
           <input
             name="phone"
-            placeholder={t("userInformation.phoneNumber")}
+            placeholder="Số điện thoại"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
@@ -206,11 +212,8 @@ const Signup = () => {
               setAcceptTerms(event.target.checked);
             }}
           >
-            {t("signupPage.hasAgreed")}{" "}
-            <Link to="/policy/terms">{t("signupPage.termsPolicy")}</Link>{" "}
-            {t("signupPage.and")}{" "}
-            <Link to="/policy/privacy">{t("signupPage.privacyPolicy")}</Link>{" "}
-            {t("signupPage.ofHuimitu")}
+            Tôi đã đồng ý với <Link to="/policy/terms">điều khoản sử dụng</Link>{" "}
+            và <Link to="/policy/privacy">chính sách bảo mật</Link> của EatWell
           </Checkbox>
         </div>
         <Button
@@ -221,20 +224,20 @@ const Signup = () => {
           isLoading={isLoading}
           disabled={isLoading}
         >
-          {t("loginPage.signup")}
+          Đăng ký
         </Button>
       </form>
       <div className="my-2 d-flex flex-column justify-content-center align-items-center">
-        <p>{t("loginPage.or")}</p>
+        <p>Hoặc</p>
         <GoogleLoginButton
           onError={handleGoogleError}
           onSuccess={handleGoogleSuccess}
         />
 
         <p className="mt-3">
-          {t("loginPage.hadAccount")}
+          Bạn đã có tài khoản?
           <Link to="/login" className="text-key pointer pl-1">
-            {t("loginPage.login")}
+            Đăng nhập
           </Link>
         </p>
       </div>
