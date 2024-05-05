@@ -6,7 +6,7 @@ import { DownOutlined } from "@ant-design/icons";
 import "./style.css";
 import logo from "images/logo.png";
 import { useContext } from "react";
-import { AccountContext } from "context/AccountContext";
+import { AccountContext } from "stores/AccountContext";
 
 const Header = () => {
   const { logout, isLogin, account } = useContext(AccountContext);
@@ -15,11 +15,14 @@ const Header = () => {
 
   return (
     <>
-      <header className="header border pb-1" style={{ marginBottom: "25px" }}>
+      <header
+        className="header border pb-1"
+        style={{ marginBottom: "25px", marginTop: "10px" }}
+      >
         <div className="container">
           <div className="row container" style={{ paddingRight: "0px" }}>
             <div className="col-lg-3" style={{ paddingLeft: "0px" }}>
-              <div className="header__logo logo">
+              <div className="header__logo logo" style={{ width: "500px" }}>
                 <Link to="/">
                   <img src={logo} style={{ width: "100%" }} alt="eatwell" />
                 </Link>
@@ -29,7 +32,10 @@ const Header = () => {
               <nav className="header__menu">
                 <ul>
                   <li className={pathname === "/" ? "active" : ""}>
-                    <Link to="/"></Link>
+                    <Link to="/">Trang chủ</Link>
+                  </li>
+                  <li className={pathname === "/" ? "active" : ""}>
+                    <Link to="/about-us">Về chúng tôi</Link>
                   </li>
                   <li
                     className={pathname.startsWith("/policy") ? "active" : ""}

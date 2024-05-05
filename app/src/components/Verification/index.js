@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import accountService from "services/account";
+import authApi from "api/auth";
 
 const Verification = () => {
   const { token } = useParams();
@@ -19,7 +19,7 @@ const Verification = () => {
   const fetchData = async () => {
     setLoading(true);
 
-    const response = await accountService.verify(token);
+    const response = await authApi.verify(token);
     const { exitcode } = response.data;
     if (exitcode === 0) {
       setSuccess(true);

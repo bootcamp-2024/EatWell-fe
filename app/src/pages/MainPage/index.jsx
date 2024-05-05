@@ -4,11 +4,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "components/Header";
 import Footer from "components/Footer";
 import Login from "components/Login";
-import Signup from "components/Signup";
 import Verification from "components/Verification";
 import HomePage from "pages/HomePage";
 import ServerError from "components/ServerError";
 import NotFound from "components/NotFound";
+import SignUp from "components/SignUp";
 
 const MainPage = () => {
   return (
@@ -20,8 +20,8 @@ const MainPage = () => {
           <Route exact path="/error" element={<ServerError />} />
           <Route path="*" element={<NotFound />} />
           <Route exact path="/verify/:token" element={<Verification />} />
-          <Route exact path="/login" element={<Login />}></Route>
-          <Route exact path="/signup" element={<Signup />} />
+          <Route exact path="/login" element={<Login />} />
+          <Route exact path="/signup" element={<SignUp />} />
         </Routes>
         <Footer />
       </BrowserRouter>

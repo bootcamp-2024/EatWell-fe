@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import GoogleLoginButton from "components/GoogleLoginButton";
 import authApi from "api/auth";
 import swal from "sweetalert2";
 
 import {
+  validateDoB,
   validateEmail,
   validateMinLength,
   validatePhone,
@@ -12,16 +13,18 @@ import {
 
 import "./style.css";
 import { useContext } from "react";
-import { AccountContext } from "context/AccountContext";
 import { Button, Checkbox } from "antd";
+import { AccountContext } from "stores/AccountContext";
 
-const Signup = () => {
+const SignUp = () => {
   const { login } = useContext(AccountContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [fullname, setFullname] = useState("");
   const [phone, setPhone] = useState("");
+  const [dob, setDoB] = useState("");
+  const [gender, setGender] = useState("");
   const [error, setError] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
 
@@ -34,6 +37,7 @@ const Signup = () => {
     passwordConfirm,
     email,
     phone,
+    dob,
     acceptTerms
   ) => {
     if (password !== passwordConfirm) {
@@ -74,6 +78,16 @@ const Signup = () => {
       return;
     }
 
+    if (!validateDoB(dob)) {
+      swal.fire({
+        title: "Error",
+        text: "Vui lòng nhập ngày sinh hợp lệ",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     console.log(acceptTerms);
     if (!acceptTerms) {
       swal.fire({
@@ -90,9 +104,25 @@ const Signup = () => {
 
   const onSubmit = async (e) => {
     try {
-      if (email && password && passwordConfirm && fullname && phone) {
+      console.log(dob);
+      if (
+        email &&
+        password &&
+        passwordConfirm &&
+        fullname &&
+        phone &&
+        gender &&
+        dob
+      ) {
         if (
-          !validateFields(password, passwordConfirm, email, phone, acceptTerms)
+          !validateFields(
+            password,
+            passwordConfirm,
+            email,
+            phone,
+            dob,
+            acceptTerms
+          )
         ) {
           return;
         }
@@ -101,10 +131,12 @@ const Signup = () => {
           password,
           fullname,
           phone,
+          gender,
+          dateOfBirth: dob,
         };
 
         setIsLoading(true);
-        const response = await authService.signup(entity);
+        const response = await authApi.signup(entity);
         setIsLoading(false);
 
         const { exitcode, message } = response.data;
@@ -153,7 +185,9 @@ const Signup = () => {
     <div className="d-flex container flex-column justify-content-center my-4">
       {error && <p className="text-danger">{error}</p>}
       <form className="d-flex flex-column justify-content-center align-items-center form_container col-xl-4 col-md-6 col-xs-12 row">
-        <h2 className="mb-4 color-key">Đăng kí người dùng</h2>
+        <h2 className="mb-4 color-key" style={{ fontWeight: "500" }}>
+          Đăng ký
+        </h2>
 
         <div className="signup-input d-flex align-items-center input-group mb-3 p-2">
           <i className="ml-2 fa fa-envelope"></i>
@@ -205,6 +239,36 @@ const Signup = () => {
             onChange={(e) => setPhone(e.target.value)}
           />
         </div>
+
+        <div className="signup-input d-flex align-items-center input-group mb-3 p-2">
+          <i className="ml-2 fa fa-calendar"></i>
+          <input
+            type="date"
+            name="birthdate"
+            placeholder="Ngày sinh"
+            value={dob}
+            onChange={(e) => setDoB(e.target.value)}
+          />
+        </div>
+        <div className="signup-input d-flex align-items-center input-group mb-3 p-1 ">
+          <select
+            className="custom-select"
+            name="gender"
+            style={{
+              border: "none",
+              width: "100%",
+              height: "100%",
+              appearance: "none",
+            }}
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+          >
+            <option value="male">Nam</option>
+            <option value="female">Nữ</option>
+            <option value="other">Khác</option>
+          </select>
+        </div>
+
         <div className="align-items-left mb-3 p-2" style={{ width: "100%" }}>
           <Checkbox
             value={acceptTerms}
@@ -245,4 +309,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignUp;

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Input } from "antd";
-import { useHistory } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function SignUpPanel(props) {
   const [email, setEmail] = useState("");
 
-  const history = useHistory();
+  const history = useNavigate();
 
   return (
     <div className="signupPanel">

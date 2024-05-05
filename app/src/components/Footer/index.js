@@ -1,17 +1,18 @@
 import React, { useEffect } from "react";
 import logo from "../../images/logo.png";
 import { Link } from "react-router-dom";
+import "./style.css";
 
 const Footer = () => {
   return (
     <>
-      <footer className="footer spad border">
+      <footer className="footer spad border custom-footer">
         <div className="container">
           <div className="row">
             <div className="col-lg-3 col-md-6 col-sm-6">
               <div className="footer__about">
                 <div className="footer__about__logo">
-                  <a href="/" style={{ width: "50%" }}>
+                  <a href="/" style={{ width: "100%" }}>
                     <img src={logo} alt="logo" />
                   </a>
                 </div>
@@ -32,6 +33,12 @@ const Footer = () => {
                   <li>
                     <Link to="/policy/terms"> Terms & conditions</Link>
                   </li>
+                  <li>
+                    <Link to="/policy/information">Company Infomation</Link>
+                  </li>
+                  <li>
+                    <Link to="/policy/aboutUs">About Us</Link>
+                  </li>
                 </ul>
                 <ul>
                   <li>
@@ -39,6 +46,12 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link to="/policy/privacy">Privacy Policy</Link>
+                  </li>
+                  <li>
+                    <Link to="/policy/aboutUs">Careers</Link>
+                  </li>
+                  <li>
+                    <Link to="/policy/aboutUs">Help Centre</Link>
                   </li>
                 </ul>
               </div>

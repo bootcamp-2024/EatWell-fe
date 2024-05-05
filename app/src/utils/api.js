@@ -1,6 +1,6 @@
 import axios from "axios";
 import config from "config/config";
-import storageService from "services/storage";
+import storageService from "stores/storage";
 import swal from "sweetalert2";
 
 const api = axios.create({
@@ -11,6 +11,7 @@ api.interceptors.request.use(async (currentConfig) => {
   const customHeaders = {};
 
   const accessToken = storageService.getAccessToken();
+
   if (accessToken) {
     customHeaders["x-access-token"] = accessToken;
   }

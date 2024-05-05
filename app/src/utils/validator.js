@@ -19,4 +19,23 @@ const validatePhone = (phone) => {
   return phone.length === 10 && regex.test(phone);
 };
 
-export { validateEmail, validateMinLength, validateMaxLength, validatePhone };
+const validateDoB = (dateString) => {
+  var dob = new Date(dateString);
+  if (isNaN(dob.getTime())) {
+    return false;
+  }
+  var today = new Date();
+  if (dob.getTime() > today.getTime()) {
+    return false;
+  }
+
+  return true;
+};
+
+export {
+  validateEmail,
+  validateMinLength,
+  validateMaxLength,
+  validatePhone,
+  validateDoB,
+};

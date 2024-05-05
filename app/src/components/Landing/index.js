@@ -1,10 +1,10 @@
 import React from "react";
 
 import calendar from "images/calendar.svg";
-import save from "images/save";
+import save from "images/save.svg";
 import wrench from "images/wrench.svg";
 
-function Landing(props) {
+const Landing = () => {
   return (
     <>
       <div className="infoPanel">
@@ -57,6 +57,6 @@ function Landing(props) {
       <div className="infoPanelSpacer" />
     </>
   );
-}
+};
 
-export default Langding;
+export default Landing;

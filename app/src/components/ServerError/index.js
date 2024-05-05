@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useEffect } from "react";
 
 const ServerError = () => {
+  const navigation = useNavigate();
   return (
     <Result
       status="500"

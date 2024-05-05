@@ -2,7 +2,6 @@ import React from "react";
 import MainPage from "./pages/MainPage";
 import config from "./config/config";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import "./App.less";
 import { AccountProvider } from "stores/AccountContext";
 
 class App extends React.Component {

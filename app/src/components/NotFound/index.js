@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useEffect } from "react";
 
 const NotFound = () => {
+  const navigation = useNavigate();
   return (
     <Result
       status="404"

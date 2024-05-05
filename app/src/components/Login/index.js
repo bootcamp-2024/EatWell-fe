@@ -3,11 +3,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import GoogleLoginButton from "components/GoogleLoginButton";
 import authApi from "api/auth";
 import swal from "sweetalert2";
-
 import "./style.css";
 import { useContext } from "react";
-import { AccountContext } from "context/AccountContext";
 import { validateEmail } from "utils/validator";
+import { AccountContext } from "stores/AccountContext";
 
 const Login = () => {
   const { login } = useContext(AccountContext);
@@ -53,7 +52,8 @@ const Login = () => {
     e.preventDefault();
     if (validateFields(email, password)) {
       try {
-        const response = await authApi.login(email, password);
+        const entity = { email, password };
+        const response = await authApi.login(entity);
         const { exitcode, token } = response.data;
 
         // eslint-disable-next-line default-case
@@ -65,7 +65,7 @@ const Login = () => {
           }
           case 101: {
             swal.fire({
-              text: "Mật khẩu hoặc password không đúng!",
+              text: "Email hoặc mật khẩu không đúng!",
               icon: "error",
               confirmButtonText: "OK",
             });
@@ -111,7 +111,9 @@ const Login = () => {
         className="d-flex flex-column justify-content-center align-items-center form_container col-xl-4 col-md-6 col-xs-12 row"
         onSubmit={onSubmit}
       >
-        <h2 className="mb-4 color-key">Đăng nhập</h2>
+        <h2 className="mb-4 color-key" style={{ fontWeight: "500" }}>
+          Đăng nhập
+        </h2>
 
         <div className="login-input d-flex align-items-center input-group mb-3 p-2">
           <i className="fa fa-envelope"></i>
