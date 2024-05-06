@@ -34,13 +34,13 @@ const Header = () => {
                   <li className={pathname === "/" ? "active" : ""}>
                     <Link to="/">Trang chủ</Link>
                   </li>
-                  <li className={pathname === "/" ? "active" : ""}>
+                  <li className={pathname === "/about-us" ? "active" : ""}>
                     <Link to="/about-us">Về chúng tôi</Link>
                   </li>
                   <li
                     className={pathname.startsWith("/policy") ? "active" : ""}
                   >
-                    <Link to="/policy/privacy">Policy</Link>
+                    <Link to="/policy/privacy">Chính sách</Link>
                     <ul className="header__menu__dropdown">
                       <li>
                         <Link to="/policy/privacy">Privacy</Link>

@@ -1,0 +1,17 @@
+.imageDescriptionContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  margin-right: 60px;
+}
+
+.imageContainer {
+  flex: 1; /* Chiếm 50% chiều rộng */
+  padding-right: 10px; /* Tạo khoảng cách giữa hình ảnh và nội dung */
+  height: fit-content;
+}
+
+.descriptionContainer {
+  flex: 1; /* Chiếm 50% chiều rộng */
+  padding-left: 10px; /* Tạo khoảng cách giữa hình ảnh và nội dung */
+}
