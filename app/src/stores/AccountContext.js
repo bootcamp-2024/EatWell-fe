@@ -44,6 +44,7 @@ export const AccountProvider = ({ children }) => {
     <AccountContext.Provider
       value={{
         isLogin,
+        account,
         fetchAccount,
         login,
         logout,
