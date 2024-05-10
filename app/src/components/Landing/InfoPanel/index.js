@@ -16,11 +16,10 @@ function InfoPanel(props) {
             draggable="false"
             style={{ width: 48, height: 48, marginBottom: "13px" }}
           />
-          <h3 className="infoSquareTitle">Remove your anxiety</h3>
+          <h3 className="infoSquareTitle">Không còn nỗi lo</h3>
           <p className="infoSquareText">
-            Meal Maker will generate all your meals ahead of time. That way, you
-            don’t have to worry about what you’re doing to eat for the next
-            meal.
+          Với EatWell, bạn không còn phải lo lắng về việc hôm nay ăn gì. 
+          EatWell sẽ lên kế hoạch cho các bữa ăn của bạn, giúp bạn tiết kiệm thời gian và luôn có sẵn những thực đơn ngon miệng, đầy đủ dinh dưỡng.
           </p>
         </div>
         <div className="infoSquare">
@@ -31,11 +30,12 @@ function InfoPanel(props) {
             draggable="false"
             style={{ width: 42, height: 42, marginBottom: "19px" }}
           />
-          <h3 className="infoSquareTitle">Customize to your needs</h3>
+          <h3 className="infoSquareTitle">Cá nhân hóa thực đơn</h3>
           <p className="infoSquareText">
-            You can customize your preferences to fit your needs. Whether you
-            liking snacking throughout the day, or need to hit your daily
-            protein requirement, Meal Maker has you covered.
+          Dựa trên sở thích, nhu cầu dinh dưỡng và khẩu vị của bạn, 
+          EatWell sẽ thiết kế thực đơn riêng biệt, phù hợp hoàn hảo với bạn. 
+          Bất kể bạn là người ăn chay, ăn kiêng, hay có dị ứng với bất kỳ thực phẩm nào, 
+          EatWell đều có thể đáp ứng mọi yêu cầu của bạn.
           </p>
         </div>
         <div className="infoSquare">
@@ -46,11 +46,11 @@ function InfoPanel(props) {
             draggable="false"
             style={{ width: 41, height: 41, marginBottom: "20px" }}
           />
-          <h3 className="infoSquareTitle">Save your favorite meals</h3>
+          <h3 className="infoSquareTitle">Lưu món ăn ưu thích</h3>
           <p className="infoSquareText">
-            See a meal that peaks your interest? Use your Meal Maker account to
-            save it for later, or pin it in place to keep it in your future meal
-            plans.
+          Tìm được món ăn ưng ý cho thực đơn của mình? 
+          Đăng nhập EatWell để lưu trữ món ngon ấy cho những bữa ăn sau này, 
+          hoặc thêm nó vào kế hoạch cho những ngày sắp tới. 
           </p>
         </div>
       </div>
