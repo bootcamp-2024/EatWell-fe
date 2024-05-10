@@ -9,12 +9,17 @@ import HomePage from "pages/HomePage";
 import ServerError from "components/ServerError";
 import NotFound from "components/NotFound";
 import SignUp from "components/SignUp";
+import MealPlanningMainPage from "pages/MealPlanningMainPage";
+import { AccountContext } from "stores/AccountContext";
+import PrivateRoute from "pages/PrivateRoute";
 
 const MainPage = () => {
+  const { isLogin } = useContext(AccountContext);
+  const displayHeader = !window.location.pathname.startsWith("/meal");
   return (
     <div className="MainDiv">
       <BrowserRouter>
-        <Header />
+        {displayHeader && <Header />}
         <Routes>
           <Route exact path="/" element={<HomePage />} />
           <Route exact path="/error" element={<ServerError />} />
@@ -22,6 +27,14 @@ const MainPage = () => {
           <Route exact path="/verify/:token" element={<Verification />} />
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/signup" element={<SignUp />} />
+          <Route
+            path="/meal/*"
+            element={
+              <PrivateRoute auth={isLogin} redirectTo="/login">
+                <MealPlanningMainPage />
+              </PrivateRoute>
+            }
+          />
         </Routes>
         <Footer />
       </BrowserRouter>

@@ -21,7 +21,7 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [fullname, setFullname] = useState("");
+  const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [dob, setDoB] = useState("");
   const [gender, setGender] = useState("");
@@ -52,7 +52,7 @@ const SignUp = () => {
     if (!validateEmail(email)) {
       swal.fire({
         title: "Error",
-        text: "Nhập số điện thoại",
+        text: "Vui lòng nhập email hợp lệ",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -109,7 +109,7 @@ const SignUp = () => {
         email &&
         password &&
         passwordConfirm &&
-        fullname &&
+        fullName &&
         phone &&
         gender &&
         dob
@@ -129,7 +129,7 @@ const SignUp = () => {
         const entity = {
           email,
           password,
-          fullname,
+          fullName,
           phone,
           gender,
           dateOfBirth: dob,
@@ -226,8 +226,8 @@ const SignUp = () => {
           <input
             name="fullname"
             placeholder="Họ tên"
-            value={fullname}
-            onChange={(e) => setFullname(e.target.value)}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
           />
         </div>
         <div className="signup-input d-flex align-items-center input-group mb-3 p-2">

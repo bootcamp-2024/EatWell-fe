@@ -17,7 +17,7 @@ const Header = () => {
     <>
       <header
         className="header border pb-1"
-        style={{ marginBottom: "25px", marginTop: "10px" }}
+        style={{ marginBottom: "25px", marginTop: "5px" }}
       >
         <div className="container">
           <div className="row container" style={{ paddingRight: "0px" }}>

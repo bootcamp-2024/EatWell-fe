@@ -1,0 +1,35 @@
+.header-icon {
+  background: #d2e3c8;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.ant-btn:hover {
+  border-color: #18aeac !important;
+  color: #18aeac !important;
+}
+.ant-btn-primary {
+  background-color: #18aeac;
+}
+.ant-btn-primary:hover {
+  background-color: #173a1a !important;
+  color: #fff !important;
+}
+.primary--color {
+  color: #18aeac !important;
+}
+.primary--light--color {
+  color: hsl(179, 62%, 71%) !important;
+}
+.secondary--color {
+  color: #86a789 !important;
+}
+
+.light--color {
+  color: #d2e3c8 !important;
+}
+.gray--color {
+  color: rgb(182, 181, 181) !important;
+}
