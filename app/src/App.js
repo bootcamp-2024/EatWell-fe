@@ -1,4 +1,5 @@
 import React from "react";
+import TestPage from "./pages/TestPage";
 import MainPage from "./pages/MainPage";
 import CalendarPage from "pages/CalendarPage";
 import config from "./config/config";
@@ -11,7 +12,8 @@ class App extends React.Component {
       <>
         <AccountProvider>
           <GoogleOAuthProvider clientId={config.GOOGLE_CLIENT_ID}>
-            <CalendarPage />
+            {/* <CalendarPage /> */}
+            <TestPage />
           </GoogleOAuthProvider>
         </AccountProvider>
       </>

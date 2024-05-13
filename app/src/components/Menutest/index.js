@@ -1,23 +1,16 @@
 import {
-  Button,
-  Eventcalendar,
-  formatDate,
-  getJson,
-  Input,
-  Popup,
-  Segmented,
-  SegmentedGroup,
-  setOptions,
-  Snackbar,
-  Textarea,
+  Button,Eventcalendar,formatDate,getJson,
+  Input,Popup,Segmented,SegmentedGroup,setOptions,Snackbar,Textarea,
 } from '@mobiscroll/react';
+import React from "react";
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import menuApi from "api/menus";
 import "@mobiscroll/react/dist/css/mobiscroll.min.css";
 setOptions({
   theme: 'ios',
   themeVariant: 'light'
 });
-
+// 5 meals in a single day
 const types = [
   {
     id: 1,
@@ -55,14 +48,12 @@ const types = [
     icon: '🥨',
   },
 ];
-
 const viewSettings = {
   timeline: {
     type: 'week',
     eventList: true,
   },
 };
-
 const responsivePopup = {
   medium: {
     display: 'center',
@@ -72,8 +63,7 @@ const responsivePopup = {
     showOverlay: false,
   },
 };
-
-function App() {
+function MenuList() {
   const [myMeals, setMyMeals] = useState([]);
   const [tempMeal, setTempMeal] = useState(null);
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -84,42 +74,49 @@ function App() {
   const [headerText, setHeader] = useState('');
   const [type, setType] = useState(1);
   const [isSnackbarOpen, setSnackbarOpen] = useState(false);
-
-  // 1
-  const saveEvent = useCallback(() => {
-    const newEvent = {
-      id: tempMeal.id,
-      title: name,
-      calories: calories,
-      notes: notes,
-      start: tempMeal.start,
-      end: tempMeal.end,
-      resource: tempMeal.resource,
-    };
-    if (isEdit) {
-      // update the event in the list
-      const index = myMeals.findIndex((x) => x.id === tempMeal.id);
-      const newEventList = [...myMeals];
-
-      newEventList.splice(index, 1, newEvent);
-      setMyMeals(newEventList);
-    } else {
-      // add the new event to the list
-      setMyMeals([...myMeals, newEvent]);
+  
+  const saveEvent = useCallback(async () => {
+    try {
+      const newEvent = {
+        title: name,
+        calories: calories,
+        notes: notes,
+        resource: type,
+      };
+  
+      let updatedMeals;
+  
+      if (isEdit) {
+        // If editing an existing meal, update it
+        const response = await menuApi.updateMenu(tempMeal.id, newEvent);
+        updatedMeals = myMeals.map(meal => meal.id === tempMeal.id ? response.data : meal);
+      } else {
+        // If adding a new meal, create it
+        const response = await menuApi.createMenu(newEvent);
+        updatedMeals = [...myMeals, response.data];
+      }
+  
+      setMyMeals(updatedMeals);
+      setPopupOpen(false);
+    } catch (error) {
+      console.error('Error saving event:', error);
     }
-    // close the popup
-    setPopupOpen(false);
-  }, [isEdit, myMeals, calories, notes, name, tempMeal]);
+  }, [calories, isEdit, myMeals, name, notes, tempMeal, type]);
 
-  // 2 delete
-  const deleteEvent = useCallback(
-    (event) => {
-      setMyMeals(myMeals.filter((item) => item.id !== event.id));
-      setTempMeal(event);
+  const deleteEvent = useCallback(async () => {
+    try {
+      // Delete the meal from the backend
+      await menuApi.deleteMenu(tempMeal.id);
+      
+      // Update the meals state to remove the deleted meal
+      const updatedMeals = myMeals.filter(meal => meal.id !== tempMeal.id);
+      setMyMeals(updatedMeals);
       setSnackbarOpen(true);
-    },
-    [myMeals],
-  );
+      setPopupOpen(false);
+    } catch (error) {
+      console.error('Error deleting event:', error);
+    }
+  }, [myMeals, tempMeal]);
 
   const loadPopupForm = useCallback((event) => {
     setName(event.title);
@@ -144,7 +141,6 @@ function App() {
     deleteEvent(tempMeal);
     setPopupOpen(false);
   }, [deleteEvent, tempMeal]);
-
   // scheduler options
   const handleEventClick = useCallback(
     (args) => {
@@ -238,17 +234,6 @@ function App() {
     }),
     [],
   );
-
-  const renderMyResource = (resource) => (
-    <div className="md-meal-planner-cont">
-      <div className="md-meal-planner-title" style={{ color: resource.color }}>
-        <span className="md-meal-planner-icon" dangerouslySetInnerHTML={{ __html: resource.icon }}></span>
-        {resource.name}
-      </div>
-      <div className="md-meal-planner-kcal">{resource.kcal}</div>
-    </div>
-  );
-
   const myScheduleEvent = useCallback((args) => {
     const event = args.original;
     return (
@@ -262,17 +247,29 @@ function App() {
   const handleSnackbarClose = useCallback(() => {
     setSnackbarOpen(false);
   }, []);
+ // Buoi an trong ngay
+  const renderMyResource = (resource) => (
+    <div className="md-meal-planner-cont">
+      <div className="md-meal-planner-title" style={{ color: resource.color }}>
+        <span className="md-meal-planner-icon" dangerouslySetInnerHTML={{ __html: resource.icon }}></span>
+        {resource.name}
+      </div>
+      <div className="md-meal-planner-kcal">{resource.kcal}</div>
+    </div>
+  );
 
   useEffect(() => {
-    getJson(
-      'https://trial.mobiscroll.com/meal-planner/',
-      (events) => {
-        setMyMeals(events);
-      },
-      'jsonp',
-    );
+    async function fetchMenus() {
+      try {
+        const menuData = await menuApi.getAllMenus();
+        console.log(menuData);
+        setMyMeals(menuData);
+      } catch (error) {
+        console.error("Error fetching menus:", error);
+      }
+    }
+    fetchMenus();
   }, []);
-
   return (
     <div>
       <Eventcalendar
@@ -283,7 +280,7 @@ function App() {
         dragToResize={false}
         dragToMove={true}
         clickToCreate={true}
-        extendDefaultEvent={extendMyDefaultEvent} //default tao moi
+        extendDefaultEvent={extendMyDefaultEvent}
         onEventClick={handleEventClick}
         onEventCreated={handleEventCreated}
         onEventDeleted={handleEventDeleted}
@@ -337,4 +334,4 @@ function App() {
   );
 }
 
-export default App;
+export default MenuList;
