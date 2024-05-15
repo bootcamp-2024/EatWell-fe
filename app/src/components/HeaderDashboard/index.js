@@ -11,7 +11,7 @@ const HeaderDashboard = () => {
   return (
     <Flex align="center" justify="space-between">
       <Typography.Title level={3} type="secondary">
-        Welcome back, <span className="ml-2">{account.fullName}</span>
+        Chào mừng bạn trở lại,<span className="ml-1">{account.fullName}!</span>
       </Typography.Title>
       <Flex align="center" gap="3rem">
         <Flex align="center" gap="10px">

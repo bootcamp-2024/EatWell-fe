@@ -1,0 +1,29 @@
+.secondary-btn {
+  background-color: #ff6600; /* Màu nền mặc định */
+  border: none;
+  border-radius: 5px;
+  height: 3rem;
+}
+
+.secondary-btn:hover {
+  background-color: #e65c00;
+}
+
+.secondary-btn:active {
+  background-color: #cc5200;
+}
+
+.underline {
+  display: inline-block;
+  position: relative;
+}
+
+.underline::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #18aeac;
+}

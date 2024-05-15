@@ -12,6 +12,7 @@ import SignUp from "components/SignUp";
 import MealPlanningMainPage from "pages/MealPlanningMainPage";
 import { AccountContext } from "stores/AccountContext";
 import PrivateRoute from "pages/PrivateRoute";
+import Survey from "components/Survey";
 
 const MainPage = () => {
   const { isLogin } = useContext(AccountContext);
@@ -32,6 +33,14 @@ const MainPage = () => {
             element={
               <PrivateRoute auth={isLogin} redirectTo="/login">
                 <MealPlanningMainPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/survey"
+            element={
+              <PrivateRoute auth={isLogin} redirectTo="/login">
+                <Survey />
               </PrivateRoute>
             }
           />
