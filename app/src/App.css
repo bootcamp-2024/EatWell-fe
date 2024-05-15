@@ -1,0 +1,12 @@
+/* Sider */
+.sider {
+  height: 100vh;
+  position: sticky !important;
+  left: 0;
+  bottom: 0;
+  top: 0;
+}
+
+.logo {
+  margin: 30px 0;
+}

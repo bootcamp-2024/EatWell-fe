@@ -4,6 +4,7 @@ import { Button, Layout } from "antd";
 import Sidebar from "components/Sidebar";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import HeaderDashboard from "components/HeaderDashboard";
+import Analysis from "components/Analysis";
 const { Sider, Header, Content } = Layout;
 
 const MealPlanningMainPage = () => {
@@ -30,7 +31,9 @@ const MealPlanningMainPage = () => {
         <Header className="header">
           <HeaderDashboard />
         </Header>
-        <Content className="content"></Content>
+        <Content className="content">
+          <Analysis />
+        </Content>
       </Layout>
     </Layout>
   );

@@ -9,6 +9,7 @@ export const AccountContext = createContext();
 export const AccountProvider = ({ children }) => {
   const [isLogin, setIsLogin] = useState(storageService.getAccessToken());
   const [account, setAccount] = useState({});
+  const [preferences, setPreferences] = useState({});
 
   useEffect(() => {
     fetchAccount();
@@ -19,10 +20,12 @@ export const AccountProvider = ({ children }) => {
 
     try {
       const response = await accountApi.getInformation();
-      const { exitcode, account } = response.data;
+      const { exitcode, account, preferences } = response.data;
       console.log(account);
+      console.log(preferences);
       if (exitcode === 0) {
         setAccount(account);
+        setPreferences(preferences);
       }
     } catch (err) {
       console.error(err);
@@ -45,6 +48,7 @@ export const AccountProvider = ({ children }) => {
       value={{
         isLogin,
         account,
+        preferences,
         fetchAccount,
         login,
         logout,

@@ -9,7 +9,7 @@ import { validateEmail } from "utils/validator";
 import { AccountContext } from "stores/AccountContext";
 
 const Login = () => {
-  const { login } = useContext(AccountContext);
+  const { login, preferences } = useContext(AccountContext);
   const { state } = useLocation();
   const navigator = useNavigate();
 
@@ -94,7 +94,11 @@ const Login = () => {
 
     if (exitcode === 0) {
       login(token);
-      navigator(state?.path || "/");
+      if (!preferences || (!preferences.height && !preferences.weight)) {
+        navigator("/survey");
+      } else {
+        navigator("/meal");
+      }
     } else {
       setError(result.data);
     }
