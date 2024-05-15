@@ -105,7 +105,7 @@ function App() {
       setMyMeals(newEventList);
     } else {
       // add the new event to the list
-      setMyMeals([...myMeals, newEvent]);
+      setMyMeals([...myMeals, newEvent]); // khong phai
     }
     // close the popup
     setPopupOpen(false);
@@ -226,7 +226,7 @@ function App() {
   const onPopupClose = useCallback(() => {
     if (!isEdit) {
       // refresh the list, if add popup was canceled, to remove the temporary event
-      setMyMeals([...myMeals]);
+      setMyMeals([...myMeals]); // khong phai
     }
     setPopupOpen(false);
   }, [isEdit, myMeals]);

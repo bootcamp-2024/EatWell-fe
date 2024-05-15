@@ -12,8 +12,6 @@ const TestPage = () => {
       <Routes>
         <Route exact path="/menus" element={<MenuList />} />
       </Routes>
-
-      <Footer />
     </BrowserRouter>
   </div>
   );

@@ -1,41 +1,46 @@
 import api from "utils/api";
 
 const menuService = {
+  // Fetch all menus
   async getAllMenus() {
     try {
       const response = await api.get("/menus");
       return response.data;
     } catch (error) {
       console.error("Error fetching menus:", error);
-      throw error;
+      throw error; // Rethrow the error for higher-level error handling
     }
   },
 
+  // Update an existing menu by ID
   async updateMenu(id, menuData) {
     try {
       const response = await api.put(`/menus/${id}`, menuData);
       return response.data;
     } catch (error) {
-      console.error("Error updating menu:", error);
-      throw error;
+      console.error(`Error updating menu with ID ${id}:`, error);
+      throw error; // Rethrow the error for higher-level error handling
     }
   },
 
+  // Delete a menu by ID
   async deleteMenu(id) {
     try {
       await api.delete(`/menus/${id}`);
     } catch (error) {
-      console.error("Error deleting menu:", error);
-      throw error;
+      console.error(`Error deleting menu with ID ${id}:`, error);
+      throw error; // Rethrow the error for higher-level error handling
     }
   },
+
+  // Create a new menu
   async createMenu(menuData) {
     try {
       const response = await api.post("/menus", menuData);
       return response.data;
     } catch (error) {
       console.error("Error creating menu:", error);
-      throw error;
+      throw error; // Rethrow the error for higher-level error handling
     }
   }
 };

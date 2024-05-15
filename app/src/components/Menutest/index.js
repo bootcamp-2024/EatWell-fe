@@ -1,135 +1,191 @@
 import {
-  Button,Eventcalendar,formatDate,getJson,
-  Input,Popup,Segmented,SegmentedGroup,setOptions,Snackbar,Textarea,
-} from '@mobiscroll/react';
+  Button,
+  Eventcalendar,
+  Input,
+  Popup,
+  Segmented,
+  SegmentedGroup,
+  setOptions,
+  Snackbar,
+  Textarea,
+} from "@mobiscroll/react";
 import React from "react";
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from "react";
 import menuApi from "api/menus";
 import "@mobiscroll/react/dist/css/mobiscroll.min.css";
 setOptions({
-  theme: 'ios',
-  themeVariant: 'light'
+  theme: "ios",
+  themeVariant: "light",
 });
-// 5 meals in a single day
+
 const types = [
   {
     id: 1,
-    name: 'Breakfast',
-    color: '#e20f0f',
-    kcal: '300 - 400 kcal',
-    icon: '🍳',
+    name: "Bữa sáng",
+    color: "#e20f0f",
+    kcal: "300 - 400 kcal",
+    icon: "🍳",
   },
   {
     id: 2,
-    name: 'Elevenses',
-    color: '#157d13',
-    kcal: '100 - 200 kcal',
-    icon: '🍌',
+    name: "Bữa trưa",
+    color: "#157d13",
+    kcal: "100 - 200 kcal",
+    icon: "🥨",
   },
   {
     id: 3,
-    name: 'Lunch',
-    color: '#32a6de',
-    kcal: '500 - 700 kcal',
-    icon: '🍜',
+    name: "Bữa xế",
+    color: "#32a6de",
+    kcal: "500 - 700 kcal",
+    icon: "🍌",
   },
   {
     id: 4,
-    name: 'Dinner',
-    color: '#e29d1d',
-    kcal: '400 - 600 kcal',
-    icon: '🥙',
-  },
-  {
-    id: 5,
-    name: 'Snack',
-    color: '#68169c',
-    kcal: '100 - 200 kcal',
-    icon: '🥨',
+    name: "Bữa tối",
+    color: "#e29d1d",
+    kcal: "400 - 600 kcal",
+    icon: "🍜",
   },
 ];
+
 const viewSettings = {
   timeline: {
-    type: 'week',
+    type: "week",
     eventList: true,
   },
 };
+
 const responsivePopup = {
   medium: {
-    display: 'center',
+    display: "center",
     width: 400,
     fullScreen: false,
     touchUi: false,
     showOverlay: false,
   },
 };
-function MenuList() {
+
+function App() {
   const [myMeals, setMyMeals] = useState([]);
   const [tempMeal, setTempMeal] = useState(null);
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isEdit, setEdit] = useState(false);
-  const [name, setName] = useState('');
-  const [calories, setCalories] = useState('');
-  const [notes, setNotes] = useState('');
-  const [headerText, setHeader] = useState('');
+  const [isDrag, setDrag] = useState(false);
+  const [mealName, setName] = useState("");
+  const [calories, setCalories] = useState("");
+  const [notes, setNotes] = useState("");
+  const [headerText, setHeader] = useState("");
   const [type, setType] = useState(1);
   const [isSnackbarOpen, setSnackbarOpen] = useState(false);
   
+  // 1
   const saveEvent = useCallback(async () => {
     try {
-      const newEvent = {
-        title: name,
-        calories: calories,
-        notes: notes,
-        resource: type,
-      };
+      let newEvent;
+  
+      if (isEdit) {
+        // If editing an existing meal, include the id
+        newEvent = {
+          id: tempMeal.id,
+          mealName: mealName,
+          calories: calories,
+          notes: notes,
+          start: tempMeal.start,
+          resource: tempMeal.resource,
+        };
+      } else {
+        // If adding a new meal, exclude the id
+        newEvent = {
+          mealName: mealName,
+          calories: calories,
+          notes: notes,
+          start: tempMeal.start,
+          resource: tempMeal.resource,
+        };
+      }
   
       let updatedMeals;
   
       if (isEdit) {
         // If editing an existing meal, update it
         const response = await menuApi.updateMenu(tempMeal.id, newEvent);
-        updatedMeals = myMeals.map(meal => meal.id === tempMeal.id ? response.data : meal);
+        updatedMeals = myMeals.map((meal) =>
+          meal.id === tempMeal.id ? response.data : meal
+        );
       } else {
         // If adding a new meal, create it
         const response = await menuApi.createMenu(newEvent);
         updatedMeals = [...myMeals, response.data];
       }
+      setMyMeals(updatedMeals);
+      setPopupOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error saving event:", error);
+    }
+  }, [calories, isEdit, myMeals, mealName, notes, tempMeal]);
   
-      setMyMeals(updatedMeals);
-      setPopupOpen(false);
-    } catch (error) {
-      console.error('Error saving event:', error);
-    }
-  }, [calories, isEdit, myMeals, name, notes, tempMeal, type]);
+  const handleDragStart = useCallback(() => {
+    setDrag(true);
+  }, []);
 
-  const deleteEvent = useCallback(async () => {
+  // Handle drag end
+  const handleDragEnd = useCallback(() => {
+    setDrag(false);
+  }, []);
+  const handleEventDrop = useCallback(
+  async (args) => {
+    if (!isDrag) return;
     try {
-      // Delete the meal from the backend
-      await menuApi.deleteMenu(tempMeal.id);
-      
-      // Update the meals state to remove the deleted meal
-      const updatedMeals = myMeals.filter(meal => meal.id !== tempMeal.id);
+      // Update meal date
+      const updatedMeals = myMeals.map((meal) =>
+        meal.id === args.event.id
+          ? { ...meal, start: args.newStart }
+          : meal
+      );
+      console.log(updatedMeals); // Check if this logs correctly
       setMyMeals(updatedMeals);
-      setSnackbarOpen(true);
-      setPopupOpen(false);
+
+      // Call backend API to update meal date
+      await menuApi.updateMenu(args.event.id, {
+        start: args.newStart,
+      });
     } catch (error) {
-      console.error('Error deleting event:', error);
+      console.error("Error updating meal date:", error);
     }
-  }, [myMeals, tempMeal]);
+  },
+  [isDrag, myMeals]
+);
+
+  
+  // 2 delete
+  const deleteEvent = useCallback(async (event) => {
+    try {
+      await menuApi.deleteMenu(event.id); // Send request to delete the meal
+      setMyMeals((prevMeals) => prevMeals.filter((meal) => meal.id !== event.id)); // Remove the meal from state
+      setSnackbarOpen(true); // Optionally, show a snackbar or confirmation message      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
+  }, []);
 
   const loadPopupForm = useCallback((event) => {
-    setName(event.title);
+    setName(event.mealName);
     setCalories(event.calories);
     setNotes(event.notes);
   }, []);
 
-  // handle popup form changes
+  // allow user to edit
   const nameChange = useCallback((ev) => {
+    console.log("New name:", ev.target.value);
+
     setName(ev.target.value);
   }, []);
 
   const caloriesChange = useCallback((ev) => {
+    console.log("New calories:", ev.target.value);
+
     setCalories(ev.target.value);
   }, []);
 
@@ -141,28 +197,29 @@ function MenuList() {
     deleteEvent(tempMeal);
     setPopupOpen(false);
   }, [deleteEvent, tempMeal]);
+
   // scheduler options
   const handleEventClick = useCallback(
     (args) => {
       const event = args.event;
-      setHeader('<div>New meal</div><div class="md-meal-type">' + formatDate('DDDD, DD MMMM YYYY', new Date(event.start)) + '</div>');
-      setType(event.resource);
+      // setHeader(event.mealName + '<div></div><div class="md-meal-type">' + formatDate('DDDD, DD MMMM YYYY', new Date(event.start)) + '</div>');
+
+      setType(event.resource); // day cac chuoi ve buoi an trong ngay
       setEdit(true);
       setTempMeal({ ...event });
       // fill popup form with event data
       loadPopupForm(event);
       setPopupOpen(true);
     },
-    [loadPopupForm],
+    [loadPopupForm]
   );
-
+  // display info when creating meals
   const handleEventCreated = useCallback(
     (args) => {
       const event = args.event;
-      const resource = types.find((obj) => obj.id === event.resource);
-      setHeader(
-        '<div>' + resource.name + '</div><div class="md-meal-type">' + formatDate('DDDD, DD MMMM YYYY', new Date(event.start)) + '</div>',
-      );
+      // setHeader(
+      //   '<div>' + event.mealName + '</div><div class="md-meal-type">' + formatDate('DDDD, DD MMMM YYYY', new Date(event.start)) + '</div>',
+      // );
       setType(event.resource);
       setEdit(false);
       setTempMeal(event);
@@ -171,7 +228,7 @@ function MenuList() {
       // open the popup
       setPopupOpen(true);
     },
-    [loadPopupForm],
+    [loadPopupForm]
   );
 
   const typeChange = useCallback(
@@ -180,40 +237,40 @@ function MenuList() {
       setType(value);
       setTempMeal({ ...tempMeal, resource: value });
     },
-    [tempMeal],
+    [tempMeal]
   );
 
   const handleEventDeleted = useCallback(
     (args) => {
       deleteEvent(args.event);
     },
-    [deleteEvent],
+    [deleteEvent]
   );
 
   // popup options
   const popupButtons = useMemo(() => {
     if (isEdit) {
       return [
-        'cancel',
+        "cancel",
         {
           handler: () => {
             saveEvent();
           },
-          keyCode: 'enter',
-          text: 'Save',
-          cssClass: 'mbsc-popup-button-primary',
+          keyCode: "enter",
+          text: "Save",
+          cssClass: "mbsc-popup-button-primary",
         },
       ];
     } else {
       return [
-        'cancel',
+        "cancel",
         {
           handler: () => {
             saveEvent();
           },
-          keyCode: 'enter',
-          text: 'Add',
-          cssClass: 'mbsc-popup-button-primary',
+          keyCode: "enter",
+          text: "Add",
+          cssClass: "mbsc-popup-button-primary",
         },
       ];
     }
@@ -226,20 +283,39 @@ function MenuList() {
     }
     setPopupOpen(false);
   }, [isEdit, myMeals]);
+  
+  // const extendMyDefaultEvent = useCallback(
+  //   () => ({
+  //     name: "New meal",
+  //     allDay: true,
+  //   }),
+  //   []
+  // );
 
-  const extendMyDefaultEvent = useCallback(
-    () => ({
-      title: 'New meal',
-      allDay: true,
-    }),
-    [],
+  const renderMyResource = (resource) => (
+    <div className="md-meal-planner-cont">
+      <div className="md-meal-planner-title" style={{ color: resource.color }}>
+        <span
+          className="md-meal-planner-icon"
+          dangerouslySetInnerHTML={{ __html: resource.icon }}
+        ></span>
+        {resource.name}
+      </div>
+      <div className="md-meal-planner-kcal">{resource.kcal}</div>
+    </div>
   );
+  // info of a meal card
   const myScheduleEvent = useCallback((args) => {
     const event = args.original;
     return (
+      // display meal as a tag on date cell
       <div className="md-meal-planner-event">
-        <div className="md-meal-planner-event-title">{event.title}</div>
-        {event.calories && <div className="md-meal-planner-event-desc">Calories {event.calories} kcal</div>}
+        <div className="md-meal-planner-event-title">{event.mealName}</div>
+        {event.calories && (
+          <div className="md-meal-planner-event-desc">
+            Calories {event.calories} kcal
+          </div>
+        )}
       </div>
     );
   }, []);
@@ -247,22 +323,14 @@ function MenuList() {
   const handleSnackbarClose = useCallback(() => {
     setSnackbarOpen(false);
   }, []);
- // Buoi an trong ngay
-  const renderMyResource = (resource) => (
-    <div className="md-meal-planner-cont">
-      <div className="md-meal-planner-title" style={{ color: resource.color }}>
-        <span className="md-meal-planner-icon" dangerouslySetInnerHTML={{ __html: resource.icon }}></span>
-        {resource.name}
-      </div>
-      <div className="md-meal-planner-kcal">{resource.kcal}</div>
-    </div>
-  );
 
+  
+  // fetch data onto front-end
   useEffect(() => {
     async function fetchMenus() {
       try {
         const menuData = await menuApi.getAllMenus();
-        console.log(menuData);
+        // console.log("Retrieved menu", menuData);
         setMyMeals(menuData);
       } catch (error) {
         console.error("Error fetching menus:", error);
@@ -270,20 +338,32 @@ function MenuList() {
     }
     fetchMenus();
   }, []);
+  // console.log("myMeals state:", myMeals);
   return (
     <div>
       <Eventcalendar
         view={viewSettings}
-        data={myMeals}
+        data={myMeals.map((meal) => ({
+          // mapping myMeals
+          id: meal._id, //binding du lieu
+          mealName: meal.mealName,
+          start: meal.start,
+          resource: meal.resource,
+          notes: meal.notes,
+          calories: meal.calories,
+        }))}
         resources={types}
         dragToCreate={false}
         dragToResize={false}
         dragToMove={true}
         clickToCreate={true}
-        extendDefaultEvent={extendMyDefaultEvent}
+        // extendDefaultEvent={extendMyDefaultEvent}
         onEventClick={handleEventClick}
         onEventCreated={handleEventCreated}
         onEventDeleted={handleEventDeleted}
+        onEventDragStart={handleDragStart}
+        onEventDragEnd={handleDragEnd}
+        onEventDrop={handleEventDrop}
         renderResource={renderMyResource}
         renderScheduleEventContent={myScheduleEvent}
         cssClass="md-meal-planner-calendar"
@@ -305,21 +385,27 @@ function MenuList() {
               {type.name}
             </Segmented>
           ))}
+          {/* display info in popup form */}
         </SegmentedGroup>
         <div className="mbsc-form-group">
-          <Input label="Name" value={name} onChange={nameChange} />
+          <Input label="Name" value={mealName} onChange={nameChange} />
           <Input label="Calories" value={calories} onChange={caloriesChange} />
           <Textarea label="Notes" value={notes} onChange={notesChange} />
         </div>
         {isEdit && (
           <div className="mbsc-button-group">
-            <Button className="mbsc-button-block" color="danger" variant="outline" onClick={onDeleteClick}>
-              Delete meal
+            <Button
+              className="mbsc-button-block"
+              color="danger"
+              variant="outline"
+              onClick={onDeleteClick}
+            >
+              Xóa bữa ăn
             </Button>
           </div>
         )}
       </Popup>
-      <Snackbar
+      {/* <Snackbar
         message="Event deleted"
         isOpen={isSnackbarOpen}
         onClose={handleSnackbarClose}
@@ -327,11 +413,11 @@ function MenuList() {
           action: () => {
             setMyMeals((prevEvents) => [...prevEvents, tempMeal]);
           },
-          text: 'Undo',
+          text: "Undo",
         }}
-      />
+      /> */}
     </div>
   );
 }
 
-export default MenuList;
+export default App;
