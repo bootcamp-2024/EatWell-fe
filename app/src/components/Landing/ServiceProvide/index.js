@@ -12,11 +12,11 @@ const ServiceProvide = () => {
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div>
                   <h4 style={{ fontWeight: 500 }}>
-                    Lorem ipsum dolor sit amet
+                    Xây dựng thực đơn cá nhân hóa
                   </h4>
                   <p style={{ width: "70%", marginTop: "10px" }}>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit sed
-                    do eiusmod tempor incididunt ut labore et dolore.
+                  EatWell thiết kế thực đơn riêng biệt cho bạn, phù hợp với sở thích, 
+                  nhu cầu dinh dưỡng và mục tiêu sức khỏe của bạn.
                   </p>
                 </div>
               </div>
@@ -25,24 +25,11 @@ const ServiceProvide = () => {
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div>
                   <h4 style={{ fontWeight: 500 }}>
-                    Lorem ipsum dolor sit amet
+                    Đánh giá nhu cầu dinh dưỡng
                   </h4>
                   <p style={{ width: "70%", marginTop: "10px" }}>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit sed
-                    do eiusmod tempor incididunt ut labore et dolore.
-                  </p>
-                </div>
-              </div>
-            </Col>
-            <Col span={24}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <div>
-                  <h4 style={{ fontWeight: 500 }}>
-                    Lorem ipsum dolor sit amet
-                  </h4>
-                  <p style={{ width: "70%", marginTop: "10px" }}>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit sed
-                    do eiusmod tempor incididunt ut labore et dolore.
+                  EatWell phân tích thói quen ăn uống và tình trạng 
+                  sức khỏe của bạn để xác định chính xác nhu cầu dinh dưỡng của bạn.
                   </p>
                 </div>
               </div>
@@ -55,11 +42,11 @@ const ServiceProvide = () => {
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div>
                   <h4 style={{ fontWeight: 500 }}>
-                    Lorem ipsum dolor sit amet
+                  Gợi ý danh sách mua sắm
                   </h4>
                   <p style={{ width: "70%", marginTop: "10px" }}>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit sed
-                    do eiusmod tempor incididunt ut labore et dolore.
+                  EatWell cung cấp danh sách mua sắm chi tiết, 
+                  giúp bạn tiết kiệm thời gian và tiền bạc khi đi chợ.
                   </p>
                 </div>
               </div>
@@ -68,24 +55,11 @@ const ServiceProvide = () => {
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div>
                   <h4 style={{ fontWeight: 500 }}>
-                    Lorem ipsum dolor sit amet
+                    Đánh giá quá trình dinh dưỡng
                   </h4>
                   <p style={{ width: "70%", marginTop: "10px" }}>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit sed
-                    do eiusmod tempor incididunt ut labore et dolore.
-                  </p>
-                </div>
-              </div>
-            </Col>
-            <Col span={24}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <div>
-                  <h4 style={{ fontWeight: 500 }}>
-                    Lorem ipsum dolor sit amet
-                  </h4>
-                  <p style={{ width: "70%", marginTop: "10px" }}>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit sed
-                    do eiusmod tempor incididunt ut labore et dolore.
+                  EatWell theo dõi tiến trình dinh dưỡng của bạn 
+                  và đưa ra lời khuyên để giúp bạn đạt được mục tiêu sức khỏe.
                   </p>
                 </div>
               </div>

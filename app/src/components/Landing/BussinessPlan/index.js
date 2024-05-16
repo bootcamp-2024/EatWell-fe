@@ -22,19 +22,10 @@ const BusinessPlan = () => {
       </div>
       <div className="descriptionContainer">
         <h3 style={{ fontWeight: 700, color: "#18AEAC", marginBottom: "30px" }}>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+          Đánh giá của khách hàng
         </h3>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-          veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-          ea commodo consequat. Duis aute irure dolor in reprehenderit in
-          voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem
-          ipsum dolor sit amet, consectetur adipisicing elit, sed do tempor
-          incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-          commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-          velit esse cillum dolore eu fugiat nulla pariatur.
+          Chia sẻ trải nghiệm của bạn cho mọi người.
         </p>
         <Link
           to="/*"
