@@ -9,6 +9,9 @@ import { useNavigate } from "react-router-dom";
 import accountService from "api/account";
 import swal from "sweetalert2";
 import { validateMinLength, validatePhone } from "utils/validator";
+
+import i18n from "language/i18n";
+import { useTranslation } from "react-i18next";
 const { Text, Title } = Typography;
 
 const formItemLayout = {
@@ -21,13 +24,14 @@ const formItemLayout = {
 };
 
 const UpdateInformationPage = () => {
+  const { t } = useTranslation();
   const { account, fetchAccount } = useContext(AccountContext);
   const navigator = useNavigate();
   const { logout } = useContext(AccountContext);
   const [form] = useForm();
 
-  //   const { t } = useTranslation();
   useEffect(() => {
+    i18n.changeLanguage(localStorage.getItem("language"));
     fetchAccount();
   }, []);
 
@@ -41,7 +45,7 @@ const UpdateInformationPage = () => {
 
       if (!(fullName && gender && dateOfBirth && phone)) {
         return swal.fire({
-          title: "Đổi thông tin",
+          title: t("userInformation.changeTitle"),
           text: "Vui lòng nhập tất cả thông tin",
           icon: "info",
           confirmButtonText: "OK",

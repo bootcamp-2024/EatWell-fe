@@ -7,8 +7,16 @@ import { useContext } from "react";
 import accountService from "api/account";
 import swal from "sweetalert2";
 import { isImage, sizeLessMegaByte } from "utils/validator";
+import i18n from "language/i18n";
+import { useTranslation } from "react-i18next";
 
 const UserInformationPage = (props) => {
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    i18n.changeLanguage(localStorage.getItem("language"));
+  }, []);
+
   const { account, fetchAccount } = useContext(AccountContext);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -24,7 +32,7 @@ const UserInformationPage = (props) => {
     async beforeUpload(file) {
       if (!(isImage(file.type) && sizeLessMegaByte(file.size, 5))) {
         swal.fire({
-          text: "Ảnh không hợp lệ!",
+          text: t("userInformation.unvalidImage"),
           icon: "error",
           confirmButtonText: "OK",
         });
@@ -36,7 +44,7 @@ const UserInformationPage = (props) => {
       const { exitcode } = response.data;
       if (exitcode === 0) {
         await swal.fire({
-          text: "Thay đổi anh đại diện thành công",
+          text: t("userInformation.changeAvaSuccess"),
           icon: "success",
           confirmButtonText: "OK",
         });
@@ -65,26 +73,30 @@ const UserInformationPage = (props) => {
             shape="round"
             size="large"
           >
-            Đăng ảnh đại diện
+            {t("userInformation.uploadAva")}
           </Button>
         </Upload>
       </div>
       <Badge.Ribbon
-        text={account.isVerified ? "Đã xác nhận" : "Chưa xác nhận"}
+        text={
+          account.isVerified
+            ? t("userInformation.verified")
+            : t("userInformation.unverified")
+        }
         color={account.isVerified ? "green" : "red"}
       >
         <Descriptions bordered className="border rounded my-4">
-          <Descriptions.Item label="Họ tên" span={3}>
+          <Descriptions.Item label={t("userInformation.fullname")} span={3}>
             {account.fullName}
           </Descriptions.Item>
-          <Descriptions.Item label="Ngày sinh">
+          <Descriptions.Item label={t("userInformation.dob")}>
             {account.dateOfBirth}
           </Descriptions.Item>
-          <Descriptions.Item label="Giới tính" span={2}>
+          <Descriptions.Item label={t("userInformation.gender")} span={2}>
             {account.gender === "male" ? "Nam" : "Nữ"}
           </Descriptions.Item>
           <Descriptions.Item label="Email">{account.email}</Descriptions.Item>
-          <Descriptions.Item label="Số điện thoại" span={2}>
+          <Descriptions.Item label={t("userInformation.phoneNumber")} span={2}>
             {account.phone}
           </Descriptions.Item>
         </Descriptions>

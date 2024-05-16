@@ -13,54 +13,65 @@ import ukFlag from "images/uk-flag.png";
 import { Link } from "react-router-dom";
 import defaultAvatar from "images/avatar.png";
 
+import i18n from "language/i18n";
+import { useTranslation } from "react-i18next";
+
 const HeaderDashboard = () => {
   const { logout, isLogin, account } = useContext(AccountContext);
-  const [language, setLanguage] = useState("Việt");
+  const { t } = useTranslation();
 
-  const handleLanguageChange = (e) => {
-    setLanguage(e.key);
+  const handleMenuClick = (e) => {
+    localStorage.setItem("language", e.key);
+    i18n.changeLanguage(localStorage.getItem("language"));
   };
+  function getItem(label, key, icon, children, type) {
+    return {
+      key,
+      icon,
+      children,
+      label,
+      type,
+    };
+  }
 
-  const menu = (
-    <Menu onClick={handleLanguageChange}>
-      <Menu.Item key="vi">
-        <img src={vnFlag} alt="Vietnam Flag" className="language-icon mr-1 " />
-        Tiếng Việt
-      </Menu.Item>
-      <Menu.Item key="en">
-        <img src={ukFlag} alt="UK Flag" className="language-icon mr-1 " />
-        English
-      </Menu.Item>
-    </Menu>
-  );
+  const langItems = [getItem(t("lang.vi"), "vi"), getItem(t("lang.en"), "en")];
+  useEffect(() => {
+    i18n.changeLanguage(localStorage.getItem("language"));
+  }, []);
+
+  // const menu = (
+  //   <Menu onClick={handleLanguageChange}>
+  //     <Menu.Item key="vi">
+  //       <img src={vnFlag} alt="Vietnam Flag" className="language-icon mr-1 " />
+  //       Tiếng Việt
+  //     </Menu.Item>
+  //     <Menu.Item key="en">
+  //       <img src={ukFlag} alt="UK Flag" className="language-icon mr-1 " />
+  //       English
+  //     </Menu.Item>
+  //   </Menu>
+  // );
 
   return (
     <Flex align="center" justify="space-between">
       <Typography.Title level={4} style={{ color: "#18AEAC" }}>
-        Chào mừng bạn trở lại!
+        {t("header.title")}
       </Typography.Title>
       <Flex align="center" gap="3rem">
         <Flex align="center" gap="15px">
-          <Dropdown overlay={menu} trigger={["click"]}>
-            <a
-              className="ant-dropdown-link"
-              onClick={(e) => e.preventDefault()}
-            >
-              {language === "en" ? (
-                <img
-                  src={ukFlag}
-                  alt="UK Flag"
-                  className="language-icon mr-1 "
-                />
-              ) : (
-                <img
-                  src={vnFlag}
-                  alt="Vietnam Flag"
-                  className="language-icon mr-1 "
-                />
-              )}
-              {language === "en" ? "English" : "Tiếng Việt"} <DownOutlined />
-            </a>
+          <Dropdown
+            overlay={
+              <Menu mode="" onClick={handleMenuClick} items={langItems} />
+            }
+          >
+            <div className="header__top__right_lang">
+              <span>
+                {localStorage.getItem("language") === "vi"
+                  ? "Tiếng Việt"
+                  : "English"}{" "}
+              </span>
+              <i class="fa fa-solid fa-caret-down"></i>
+            </div>
           </Dropdown>
           <NotificationOutlined className="header-icon" />
 
