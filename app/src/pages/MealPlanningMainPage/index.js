@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import "./style.css";
-import { Button, Layout } from "antd";
+import { Button, Layout, Switch } from "antd";
 import Sidebar from "components/Sidebar";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import HeaderDashboard from "components/HeaderDashboard";
 import Analysis from "components/Analysis";
+import { Route, Routes } from "react-router-dom";
+import AccountPage from "pages/AccountPage";
 const { Sider, Header, Content } = Layout;
 
 const MealPlanningMainPage = () => {
@@ -32,7 +34,11 @@ const MealPlanningMainPage = () => {
           <HeaderDashboard />
         </Header>
         <Content className="content">
-          <Analysis />
+          <Routes>
+            <Route path="/analysis" element={<Analysis />} />
+
+            <Route path="/settings/*" element={<AccountPage />} />
+          </Routes>
         </Content>
       </Layout>
     </Layout>

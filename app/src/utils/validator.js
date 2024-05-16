@@ -32,10 +32,20 @@ const validateDoB = (dateString) => {
   return true;
 };
 
+const isImage = (fileType) => {
+  return fileType === "image/jpeg" || fileType === "image/png";
+};
+
+const sizeLessMegaByte = (inputByte, megaByte) => {
+  return inputByte / Math.pow(1024, 2) < megaByte;
+};
+
 export {
   validateEmail,
   validateMinLength,
   validateMaxLength,
   validatePhone,
   validateDoB,
+  isImage,
+  sizeLessMegaByte,
 };

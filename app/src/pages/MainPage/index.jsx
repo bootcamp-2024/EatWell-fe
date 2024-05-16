@@ -15,7 +15,7 @@ import PrivateRoute from "pages/PrivateRoute";
 import Survey from "components/Survey";
 
 const MainPage = () => {
-  const { isLogin } = useContext(AccountContext);
+  const { isLogin, preferences } = useContext(AccountContext);
   const displayHeader = !window.location.pathname.startsWith("/meal");
   return (
     <div className="MainDiv">

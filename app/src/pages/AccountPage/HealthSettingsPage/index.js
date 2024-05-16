@@ -12,7 +12,7 @@ import CurrencyInput from "react-currency-input-field";
 
 const { Option } = Select;
 
-const Survey = () => {
+const HealthSettingsPage = () => {
   let { account } = useContext(AccountContext);
   let [isLoading, setIsLoading] = useState(false);
   let [error, setError] = useState("");
@@ -28,25 +28,6 @@ const Survey = () => {
   let [suggestedCalories, setSuggestedCalories] = useState(0);
 
   const navigator = useNavigate();
-
-  // const handleAllergyInputChange = (e) => {
-  //   setAllergyInput(e.target.value);
-  //   console.log(allergyInput);
-  // };
-
-  // const handleAddAllergy = () => {
-  //   if (allergyInput && !allergies.includes(allergyInput.trim())) {
-  //     setAllergies([...allergies, allergyInput.trim()]);
-  //     console.log(allergies);
-  //     setAllergyInput("");
-  //   }
-  // };
-
-  // const handlePressEnter = (e) => {
-  //   if (e.key === "Enter") {
-  //     handleAddAllergy();
-  //   }
-  // };
 
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -72,13 +53,6 @@ const Survey = () => {
     setInputVisible(false);
     setInputValue("");
   };
-
-  // const handleRemoveAllergy = (removedAllergy) => {
-  //   const newAllergies = allergies.filter(
-  //     (allergy) => allergy !== removedAllergy
-  //   );
-  //   setAllergies(newAllergies);
-  // };
 
   const handleMaxPriceChange = (value) => {
     setMaxPrice(value);
@@ -176,9 +150,8 @@ const Survey = () => {
 
   return (
     <div className="d-flex container flex-column justify-content-center my-4">
-      <p style={{ fontWeight: "700", color: "red", fontSize: "20px" }}>
-        Vui lòng nhập các thông tin cần thiết để chúng tôi hiểu thêm về tình
-        trạng của bạn hơn!
+      <p style={{ fontWeight: "700", color: "#18AEAC", fontSize: "20px" }}>
+        CẬP NHẬT CHỈ SỐ SỨC KHỎE
       </p>
       <div style={{ width: "100%", borderBottom: "1px solid #eeeeee" }} />
       <div />
@@ -222,43 +195,6 @@ const Survey = () => {
         />
       </div>
 
-      {/* <div style={{ width: "40%" }}>
-        <div>
-          <label
-            style={{ marginBottom: "5px", display: "block", fontWeight: "600" }}
-          >
-            Thực phẩm dị ứng
-          </label>
-        </div>
-        {Array.isArray(allergies) &&
-          allergies.map((allergy) => (
-            <Tag
-              key={allergy}
-              closable
-              onClose={() => handleRemoveAllergy(allergy)}
-              style={{
-                marginBottom: "5px",
-                marginRight: "5px",
-                height: "25px",
-                borderRadius: "5px",
-                backgroundColor: "#18AEAC",
-                color: "#ffff",
-                fontWeight: "600",
-                boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              {allergy}
-            </Tag>
-          ))}
-        <Input
-          type="text"
-          size="large"
-          value={allergyInput}
-          onChange={handleAllergyInputChange}
-          onPressEnter={handlePressEnter}
-          placeholder="Nhập thực phẩm bạn dị ứng"
-        />
-      </div> */}
       <div style={{ width: "40%" }}>
         <div>
           <label
@@ -448,4 +384,4 @@ const Survey = () => {
   );
 };
 
-export default Survey;
+export default HealthSettingsPage;

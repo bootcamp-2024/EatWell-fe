@@ -15,6 +15,23 @@ const accountService = {
     const response = await api.patch("/account/update-preference", data);
     return response;
   },
+
+  async uploadAvatar(file) {
+    const form = new FormData();
+    form.append("avatar", file);
+    const response = await api.patch("/account/avatar", form);
+    return response;
+  },
+
+  async changePassword(password, newPassword, confirmPassword) {
+    const requestBody = {
+      password: password,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword,
+    };
+    const response = await api.patch("/account/password", requestBody);
+    return response;
+  },
 };
 
 export default accountService;
