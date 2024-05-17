@@ -39,19 +39,6 @@ const HeaderDashboard = () => {
     i18n.changeLanguage(localStorage.getItem("language"));
   }, []);
 
-  // const menu = (
-  //   <Menu onClick={handleLanguageChange}>
-  //     <Menu.Item key="vi">
-  //       <img src={vnFlag} alt="Vietnam Flag" className="language-icon mr-1 " />
-  //       Tiếng Việt
-  //     </Menu.Item>
-  //     <Menu.Item key="en">
-  //       <img src={ukFlag} alt="UK Flag" className="language-icon mr-1 " />
-  //       English
-  //     </Menu.Item>
-  //   </Menu>
-  // );
-
   return (
     <Flex align="center" justify="space-between">
       <Typography.Title level={4} style={{ color: "#18AEAC" }}>

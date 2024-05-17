@@ -32,6 +32,11 @@ const accountService = {
     const response = await api.patch("/account/password", requestBody);
     return response;
   },
+
+  async getIngredientNames() {
+    const response = await api.get("/meal/getIngredients");
+    return response;
+  },
 };
 
 export default accountService;

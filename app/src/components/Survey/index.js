@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { Button, Input, Radio, Select, Tag, Tooltip } from "antd";
+import React, { useContext, useEffect, useState } from "react";
+import { AutoComplete, Button, Input, Radio, Select, Tag, Tooltip } from "antd";
 import { useNavigate } from "react-router-dom";
 import accountService from "api/account";
 import swal from "sweetalert2";
@@ -9,86 +9,86 @@ import { PlusOutlined } from "@ant-design/icons";
 import "./style.css";
 import formatter from "utils/formatter";
 import CurrencyInput from "react-currency-input-field";
+import mealService from "api/meal";
 
 const { Option } = Select;
 
 const Survey = () => {
-  let { account } = useContext(AccountContext);
-  let [isLoading, setIsLoading] = useState(false);
-  let [error, setError] = useState("");
-  let [bmi, setBmi] = useState([]);
-  let [bmr, setBmr] = useState([]);
-  let [allergyInput, setAllergyInput] = useState("");
-  let [allergies, setAllergies] = useState([]);
-  let [cuisine, setCuisine] = useState("Vietnamese");
-  let [height, setHeight] = useState("");
-  let [weight, setWeight] = useState("");
-  let [maxPrice, setMaxPrice] = useState("");
-  let [activityLevel, setActivityLevel] = useState("sedentary");
-  let [suggestedCalories, setSuggestedCalories] = useState(0);
+  const { account } = useContext(AccountContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [bmi, setBmi] = useState([]);
+  const [bmr, setBmr] = useState([]);
+  const [allergies, setAllergies] = useState([]);
+  const [cuisine, setCuisine] = useState("Vietnamese");
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [activityLevel, setActivityLevel] = useState("sedentary");
+  const [suggestedCalories, setSuggestedCalories] = useState(0);
+  const [ingredients, setIngredients] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dataSource, setDataSource] = useState([]);
+  const [searchTermVisible, setSearchTermVisible] = useState(false);
 
   const navigator = useNavigate();
 
-  // const handleAllergyInputChange = (e) => {
-  //   setAllergyInput(e.target.value);
-  //   console.log(allergyInput);
-  // };
+  const fetchIngredients = async () => {
+    try {
+      const response = await mealService.getIngredientNames();
+      const ingredientList = response.data.names;
+      const data = ingredientList.map((ingredient) => ({ value: ingredient }));
+      setIngredients(ingredientList);
+      setDataSource(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-  // const handleAddAllergy = () => {
-  //   if (allergyInput && !allergies.includes(allergyInput.trim())) {
-  //     setAllergies([...allergies, allergyInput.trim()]);
-  //     console.log(allergies);
-  //     setAllergyInput("");
-  //   }
-  // };
+  const filterIngredients = (searchTerm) => {
+    const filtered = ingredients.filter((ingredient) =>
+      ingredient.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const data = filtered.map((ingredient) => ({ value: ingredient }));
+    setDataSource(data);
+  };
 
-  // const handlePressEnter = (e) => {
-  //   if (e.key === "Enter") {
-  //     handleAddAllergy();
-  //   }
-  // };
-
-  const [inputVisible, setInputVisible] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  useEffect(() => {
+    fetchIngredients();
+  }, []);
 
   const handleClose = (removedTag) => {
     const newAllergies = allergies.filter((tag) => tag !== removedTag);
     setAllergies(newAllergies);
   };
 
-  const showInput = () => {
-    setInputVisible(true);
+  const showSearchTerm = () => {
+    setSearchTermVisible(true);
   };
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+  const handleSearchTermChange = (value) => {
+    setSearchTerm(value);
+    filterIngredients(value);
   };
 
-  const handleInputConfirm = () => {
-    if (inputValue && !allergies.includes(inputValue.trim())) {
-      setAllergies([...allergies, inputValue.trim()]);
+  const handleSearchTermConfirm = (value) => {
+    if (value && !allergies.includes(value.trim())) {
+      setAllergies([...allergies, value.trim()]);
     }
-    console.log(allergies);
-    setInputVisible(false);
-    setInputValue("");
+    setSearchTermVisible(false);
+    setSearchTerm("");
   };
-
-  // const handleRemoveAllergy = (removedAllergy) => {
-  //   const newAllergies = allergies.filter(
-  //     (allergy) => allergy !== removedAllergy
-  //   );
-  //   setAllergies(newAllergies);
-  // };
 
   const handleMaxPriceChange = (value) => {
     setMaxPrice(value);
   };
-  const handleWeightChange = (e) => {
-    setWeight(parseFloat(e.target.value));
+
+  const handleWeightChange = (value) => {
+    setWeight(value);
   };
 
-  const handleHeightChange = (e) => {
-    setHeight(parseFloat(e.target.value));
+  const handleHeightChange = (value) => {
+    setHeight(value);
   };
 
   const handleActivityLevelChange = (value) => {
@@ -97,32 +97,33 @@ const Survey = () => {
 
   const calculateCalories = () => {
     const age = calculateAge(account.dateOfBirth);
-    const bmr = calculateBMR(account.gender, weight, height, age);
-    const bmi = weight / ((height * height) / 10000);
-    setBmi(bmi);
-    setBmr(bmr);
+    const bmrResult = calculateBMR(account.gender, weight, height, age);
+    const bmiResult = weight / ((height * height) / 10000);
+    setBmi(bmiResult);
+    setBmr(bmrResult);
 
+    let suggestedCaloriesResult = 0;
     switch (activityLevel) {
       case "sedentary":
-        suggestedCalories = bmr * 1.2;
+        suggestedCaloriesResult = bmrResult * 1.2;
         break;
       case "light":
-        suggestedCalories = bmr * 1.375;
+        suggestedCaloriesResult = bmrResult * 1.375;
         break;
       case "moderate":
-        suggestedCalories = bmr * 1.55;
+        suggestedCaloriesResult = bmrResult * 1.55;
         break;
       case "active":
-        suggestedCalories = bmr * 1.725;
+        suggestedCaloriesResult = bmrResult * 1.725;
         break;
       default:
         break;
     }
-    suggestedCalories = Math.round(suggestedCalories);
-    setSuggestedCalories(suggestedCalories);
+    suggestedCaloriesResult = Math.round(suggestedCaloriesResult);
+    setSuggestedCalories(suggestedCaloriesResult);
   };
 
-  const onSubmit = async (e) => {
+  const onSubmit = async () => {
     try {
       if (
         allergies &&
@@ -301,20 +302,22 @@ const Survey = () => {
               tagElem
             );
           })}
-          {inputVisible && (
-            <Input
-              type="text"
-              size="large"
-              style={{ width: 78 }}
-              value={inputValue}
-              onChange={handleInputChange}
-              onBlur={handleInputConfirm}
-              onPressEnter={handleInputConfirm}
-            />
+          {searchTermVisible && (
+            <div>
+              <AutoComplete
+                style={{ width: "100%" }}
+                options={dataSource}
+                value={searchTerm}
+                onSelect={handleSearchTermConfirm}
+                onSearch={handleSearchTermChange}
+                placeholder="Tìm kiếm thực phẩm..."
+              />
+            </div>
           )}
-          {!inputVisible && (
+
+          {!searchTermVisible && (
             <Tag
-              onClick={showInput}
+              onClick={showSearchTerm}
               style={{
                 background: "#fff",
                 borderStyle: "dashed",
@@ -325,6 +328,20 @@ const Survey = () => {
           )}
         </div>
       </div>
+
+      {/* <div>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <ul>
+          {filterIngredients().map((ingredient, index) => (
+            <li key={index}>{ingredient}</li>
+          ))}
+        </ul>
+      </div> */}
 
       <div style={{ marginBottom: "5px", width: "40%" }}>
         <label style={{ display: "block", fontWeight: "600" }}>
