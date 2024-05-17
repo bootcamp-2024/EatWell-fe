@@ -12,7 +12,7 @@ import {
   Textarea,
 } from '@mobiscroll/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import "@mobiscroll/react/dist/css/mobiscroll.min.css";
+
 setOptions({
   theme: 'ios',
   themeVariant: 'light'
@@ -85,7 +85,6 @@ function App() {
   const [type, setType] = useState(1);
   const [isSnackbarOpen, setSnackbarOpen] = useState(false);
 
-  // 1
   const saveEvent = useCallback(() => {
     const newEvent = {
       id: tempMeal.id,
@@ -105,13 +104,12 @@ function App() {
       setMyMeals(newEventList);
     } else {
       // add the new event to the list
-      setMyMeals([...myMeals, newEvent]); // khong phai
+      setMyMeals([...myMeals, newEvent]);
     }
     // close the popup
     setPopupOpen(false);
   }, [isEdit, myMeals, calories, notes, name, tempMeal]);
 
-  // 2 delete
   const deleteEvent = useCallback(
     (event) => {
       setMyMeals(myMeals.filter((item) => item.id !== event.id));
@@ -226,7 +224,7 @@ function App() {
   const onPopupClose = useCallback(() => {
     if (!isEdit) {
       // refresh the list, if add popup was canceled, to remove the temporary event
-      setMyMeals([...myMeals]); // khong phai
+      setMyMeals([...myMeals]);
     }
     setPopupOpen(false);
   }, [isEdit, myMeals]);
@@ -283,7 +281,7 @@ function App() {
         dragToResize={false}
         dragToMove={true}
         clickToCreate={true}
-        extendDefaultEvent={extendMyDefaultEvent} //default tao moi
+        extendDefaultEvent={extendMyDefaultEvent}
         onEventClick={handleEventClick}
         onEventCreated={handleEventCreated}
         onEventDeleted={handleEventDeleted}

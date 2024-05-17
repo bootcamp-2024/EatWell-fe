@@ -15,12 +15,9 @@ const CalendarPage = () => {
   return (
     <div className="CalendarPage">
       <BrowserRouter>
-        <Header />
         <Routes>
           <Route exact path="/calendar" element={<Calendar />} />
         </Routes>
-
-        <Footer />
       </BrowserRouter>
     </div>
   );

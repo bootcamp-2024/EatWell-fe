@@ -34,15 +34,15 @@ const menuService = {
   },
 
   // Create a new menu
-  async createMenu(menuData) {
-    try {
-      const response = await api.post("/menus", menuData);
-      return response.data;
-    } catch (error) {
-      console.error("Error creating menu:", error);
-      throw error; // Rethrow the error for higher-level error handling
-    }
-  }
+  // async createMenu(menuData) {
+  //   try {
+  //     const response = await api.post("/menus", menuData);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error creating menu:", error);
+  //     throw error; // Rethrow the error for higher-level error handling
+  //   }
+  // }
 };
 
 export default menuService;

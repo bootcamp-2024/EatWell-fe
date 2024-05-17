@@ -13,6 +13,7 @@ import React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import menuApi from "api/menus";
 import "@mobiscroll/react/dist/css/mobiscroll.min.css";
+
 setOptions({
   theme: "ios",
   themeVariant: "light",
@@ -78,93 +79,69 @@ function App() {
   const [headerText, setHeader] = useState("");
   const [type, setType] = useState(1);
   const [isSnackbarOpen, setSnackbarOpen] = useState(false);
-  
+
   // 1
   const saveEvent = useCallback(async () => {
     try {
-      let newEvent;
-  
-      if (isEdit) {
-        // If editing an existing meal, include the id
-        newEvent = {
-          id: tempMeal.id,
-          mealName: mealName,
-          calories: calories,
-          notes: notes,
-          start: tempMeal.start,
-          resource: tempMeal.resource,
-        };
-      } else {
-        // If adding a new meal, exclude the id
-        newEvent = {
-          mealName: mealName,
-          calories: calories,
-          notes: notes,
-          start: tempMeal.start,
-          resource: tempMeal.resource,
-        };
-      }
-  
-      let updatedMeals;
-  
-      if (isEdit) {
-        // If editing an existing meal, update it
-        const response = await menuApi.updateMenu(tempMeal.id, newEvent);
-        updatedMeals = myMeals.map((meal) =>
-          meal.id === tempMeal.id ? response.data : meal
-        );
-      } else {
-        // If adding a new meal, create it
-        const response = await menuApi.createMenu(newEvent);
-        updatedMeals = [...myMeals, response.data];
-      }
+      const newEvent = {
+        id: tempMeal.id,
+        mealName: mealName,
+        calories: calories,
+        notes: notes,
+        start: tempMeal.start,
+        resource: tempMeal.resource,
+      };
+
+      const updatedMeals = myMeals.map((meal) =>
+        meal.id === tempMeal.id ? { ...meal, ...newEvent } : meal
+      );
+
+      await menuApi.updateMenu(tempMeal.id, newEvent);
+
       setMyMeals(updatedMeals);
       setPopupOpen(false);
       window.location.reload();
     } catch (error) {
       console.error("Error saving event:", error);
     }
-  }, [calories, isEdit, myMeals, mealName, notes, tempMeal]);
-  
+  }, [calories, myMeals, mealName, notes, tempMeal]);
+
   const handleDragStart = useCallback(() => {
     setDrag(true);
   }, []);
 
-  // Handle drag end
   const handleDragEnd = useCallback(() => {
     setDrag(false);
   }, []);
+
   const handleEventDrop = useCallback(
-  async (args) => {
-    if (!isDrag) return;
-    try {
-      // Update meal date
-      const updatedMeals = myMeals.map((meal) =>
-        meal.id === args.event.id
-          ? { ...meal, start: args.newStart }
-          : meal
-      );
-      console.log(updatedMeals); // Check if this logs correctly
-      setMyMeals(updatedMeals);
+    async (args) => {
+      if (!isDrag) return;
+      try {
+        const updatedMeals = myMeals.map((meal) =>
+          meal.id === args.event.id
+            ? { ...meal, start: args.newStart }
+            : meal
+        );
+        setMyMeals(updatedMeals);
 
-      // Call backend API to update meal date
-      await menuApi.updateMenu(args.event.id, {
-        start: args.newStart,
-      });
-    } catch (error) {
-      console.error("Error updating meal date:", error);
-    }
-  },
-  [isDrag, myMeals]
-);
+        await menuApi.updateMenu(args.event.id, {
+          start: args.newStart,
+        });
+      } catch (error) {
+        console.error("Error updating meal date:", error);
+      }
+    },
+    [isDrag, myMeals]
+  );
 
-  
   // 2 delete
   const deleteEvent = useCallback(async (event) => {
     try {
-      await menuApi.deleteMenu(event.id); // Send request to delete the meal
-      setMyMeals((prevMeals) => prevMeals.filter((meal) => meal.id !== event.id)); // Remove the meal from state
-      setSnackbarOpen(true); // Optionally, show a snackbar or confirmation message      window.location.reload();
+      await menuApi.deleteMenu(event.id);
+      setMyMeals((prevMeals) => prevMeals.filter((meal) => meal.id !== event.id));
+      setSnackbarOpen(true);
+      window.location.reload();
     } catch (error) {
       console.error("Error deleting event:", error);
     }
@@ -178,14 +155,10 @@ function App() {
 
   // allow user to edit
   const nameChange = useCallback((ev) => {
-    console.log("New name:", ev.target.value);
-
     setName(ev.target.value);
   }, []);
 
   const caloriesChange = useCallback((ev) => {
-    console.log("New calories:", ev.target.value);
-
     setCalories(ev.target.value);
   }, []);
 
@@ -202,30 +175,10 @@ function App() {
   const handleEventClick = useCallback(
     (args) => {
       const event = args.event;
-      // setHeader(event.mealName + '<div></div><div class="md-meal-type">' + formatDate('DDDD, DD MMMM YYYY', new Date(event.start)) + '</div>');
-
-      setType(event.resource); // day cac chuoi ve buoi an trong ngay
+      setType(event.resource);
       setEdit(true);
       setTempMeal({ ...event });
-      // fill popup form with event data
       loadPopupForm(event);
-      setPopupOpen(true);
-    },
-    [loadPopupForm]
-  );
-  // display info when creating meals
-  const handleEventCreated = useCallback(
-    (args) => {
-      const event = args.event;
-      // setHeader(
-      //   '<div>' + event.mealName + '</div><div class="md-meal-type">' + formatDate('DDDD, DD MMMM YYYY', new Date(event.start)) + '</div>',
-      // );
-      setType(event.resource);
-      setEdit(false);
-      setTempMeal(event);
-      // fill popup form with event data
-      loadPopupForm(event);
-      // open the popup
       setPopupOpen(true);
     },
     [loadPopupForm]
@@ -262,35 +215,13 @@ function App() {
         },
       ];
     } else {
-      return [
-        "cancel",
-        {
-          handler: () => {
-            saveEvent();
-          },
-          keyCode: "enter",
-          text: "Add",
-          cssClass: "mbsc-popup-button-primary",
-        },
-      ];
+      return [];
     }
   }, [isEdit, saveEvent]);
 
   const onPopupClose = useCallback(() => {
-    if (!isEdit) {
-      // refresh the list, if add popup was canceled, to remove the temporary event
-      setMyMeals([...myMeals]);
-    }
     setPopupOpen(false);
-  }, [isEdit, myMeals]);
-  
-  // const extendMyDefaultEvent = useCallback(
-  //   () => ({
-  //     name: "New meal",
-  //     allDay: true,
-  //   }),
-  //   []
-  // );
+  }, []);
 
   const renderMyResource = (resource) => (
     <div className="md-meal-planner-cont">
@@ -304,18 +235,15 @@ function App() {
       <div className="md-meal-planner-kcal">{resource.kcal}</div>
     </div>
   );
-  // info of a meal card
+
   const myScheduleEvent = useCallback((args) => {
     const event = args.original;
+
     return (
-      // display meal as a tag on date cell
       <div className="md-meal-planner-event">
-        <div className="md-meal-planner-event-title">{event.mealName}</div>
-        {event.calories && (
-          <div className="md-meal-planner-event-desc">
-            Calories {event.calories} kcal
-          </div>
-        )}
+        <div className="md-meal-planner-event-title">
+          {event.mealName} {event.calories && ` - ${event.calories} kcal`}
+        </div>
       </div>
     );
   }, []);
@@ -324,13 +252,10 @@ function App() {
     setSnackbarOpen(false);
   }, []);
 
-  
-  // fetch data onto front-end
   useEffect(() => {
     async function fetchMenus() {
       try {
         const menuData = await menuApi.getAllMenus();
-        // console.log("Retrieved menu", menuData);
         setMyMeals(menuData);
       } catch (error) {
         console.error("Error fetching menus:", error);
@@ -338,14 +263,13 @@ function App() {
     }
     fetchMenus();
   }, []);
-  // console.log("myMeals state:", myMeals);
+
   return (
     <div>
       <Eventcalendar
         view={viewSettings}
         data={myMeals.map((meal) => ({
-          // mapping myMeals
-          id: meal._id, //binding du lieu
+          id: meal._id,
           mealName: meal.mealName,
           start: meal.start,
           resource: meal.resource,
@@ -356,10 +280,8 @@ function App() {
         dragToCreate={false}
         dragToResize={false}
         dragToMove={true}
-        clickToCreate={true}
-        // extendDefaultEvent={extendMyDefaultEvent}
+        clickToCreate={false} // Disable click to create new event
         onEventClick={handleEventClick}
-        onEventCreated={handleEventCreated}
         onEventDeleted={handleEventDeleted}
         onEventDragStart={handleDragStart}
         onEventDragEnd={handleDragEnd}
@@ -385,7 +307,6 @@ function App() {
               {type.name}
             </Segmented>
           ))}
-          {/* display info in popup form */}
         </SegmentedGroup>
         <div className="mbsc-form-group">
           <Input label="Name" value={mealName} onChange={nameChange} />
@@ -405,17 +326,6 @@ function App() {
           </div>
         )}
       </Popup>
-      {/* <Snackbar
-        message="Event deleted"
-        isOpen={isSnackbarOpen}
-        onClose={handleSnackbarClose}
-        button={{
-          action: () => {
-            setMyMeals((prevEvents) => [...prevEvents, tempMeal]);
-          },
-          text: "Undo",
-        }}
-      /> */}
     </div>
   );
 }
