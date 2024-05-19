@@ -1,0 +1,97 @@
+.custom-currency-input {
+  border: 2px solid #d9d9d9ff !important;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 16px;
+  width: 100%;
+}
+
+.custom-currency-input:focus {
+  border-color: #40a9ff;
+  outline: 0;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+.radio-group {
+  background-color: #f0f0f0; /* Màu nền cho Radio.Group */
+  padding: 10px; /* Khoảng cách bên trong */
+  border-radius: 5px; /* Bo tròn các góc */
+}
+
+.radio-group .ant-radio-button-wrapper {
+  background-color: #ffffff; /* Màu nền cho Radio.Button */
+  border: 2px solid #18aeac; /* Màu viền cho Radio.Button và độ dày */
+  font-weight: 600; /* Độ đậm của chữ */
+}
+
+.radio-group .ant-radio-button-wrapper-checked {
+  background-color: #18aeac !important; /* Màu nền khi được chọn */
+  color: #ffffff; /* Màu chữ khi được chọn */
+  border-color: #18aeac !important; /* Màu viền khi được chọn */
+}
+
+.radio-group .ant-radio-button-wrapper:hover {
+  background-color: #18aeac; /* Màu nền khi hover */
+  color: #ffffff; /* Màu chữ khi hover */
+  border-color: #18aeac; /* Màu viền khi hover */
+}
+
+/* Tùy chỉnh màu nền và viền của checkbox khi được chọn */
+.custom-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #18aeac;
+  border-color: #18aeac;
+}
+
+/* Tùy chỉnh màu viền của checkbox khi không được chọn */
+.custom-checkbox .ant-checkbox-inner {
+  border-color: #18aeac;
+}
+
+/* Tùy chỉnh màu khi hover checkbox */
+.custom-checkbox .ant-checkbox-wrapper:hover .ant-checkbox-inner {
+  border-color: #18aeac;
+}
+
+/* Tùy chỉnh màu nền và viền của checkbox khi được chọn */
+.custom-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #18aeac;
+  border-color: #18aeac;
+}
+
+/* Tùy chỉnh màu viền của checkbox khi không được chọn */
+.custom-checkbox .ant-checkbox-inner {
+  border-color: #18aeac;
+}
+
+/* Tùy chỉnh màu khi hover checkbox */
+.custom-checkbox .ant-checkbox-wrapper:hover .ant-checkbox-inner {
+  border-color: #18aeac;
+}
+
+/* Tùy chỉnh màu viền của Select */
+.select-days .ant-select-selector {
+  border: 2px solid #18aeac !important;
+}
+/* Tùy chỉnh màu viền của Select khi được focus */
+.select-days .ant-select-focused .ant-select-selector,
+.select-days .ant-select-selector:focus,
+.select-days .ant-select-selector:active {
+  border-color: #18aeac !important; /* Màu viền khi focus */
+  box-shadow: 0 0 0 2px rgba(24, 174, 172, 0.2); /* Hiệu ứng shadow khi focus */
+}
+
+/* Tùy chỉnh màu viền của Select khi hover */
+.select-days .ant-select-selector:hover {
+  border-color: #18aeac !important; /* Màu viền khi hover */
+}
+
+/* Tùy chỉnh nội dung của Select */
+.select-days .ant-select-selection-item {
+  text-align: center;
+}
+
+/* Đảm bảo rằng Select có chiều rộng đầy đủ */
+.select-days .ant-select-focused {
+  width: 100%;
+  max-width: 200px;
+  border-color: #18aeac;
+}

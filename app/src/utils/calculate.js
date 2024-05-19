@@ -14,4 +14,28 @@ const calculateAge = (birthDate) => {
   return moment().diff(moment(birthDate, "YYYY-MM-DD"), "years");
 };
 
-export { calculateBMR, calculateAge };
+const calculateNutritionPerDay = (tdee) => {
+  const breakfastCalories = tdee * 0.25;
+  const lunchCalories = tdee * 0.35;
+  const dinnerCalories = tdee * 0.3;
+  // Tính toán chỉ số dinh dưỡng cho cả ngày
+  const nutritionPerDay = {
+    protein:
+      (breakfastCalories * 0.15) / 4 +
+      (lunchCalories * 0.2) / 4 +
+      (dinnerCalories * 0.2) / 4,
+    fat:
+      (breakfastCalories * 0.25) / 9 +
+      (lunchCalories * 0.3) / 9 +
+      (dinnerCalories * 0.3) / 9,
+    carbohydrat:
+      (breakfastCalories * 0.6) / 4 +
+      (lunchCalories * 0.5) / 4 +
+      (dinnerCalories * 0.5) / 4,
+    fiber: 10 + 15 + 10,
+  };
+
+  return nutritionPerDay;
+};
+
+export { calculateBMR, calculateAge, calculateNutritionPerDay };

@@ -29,7 +29,7 @@
 }
 
 .custom-currency-input {
-  border: 1px solid #d9d9d9ff !important;
+  border: 2px solid #d9d9d9ff !important;
   border-radius: 5px;
   padding: 8px 12px;
   font-size: 16px;
@@ -40,4 +40,28 @@
   border-color: #40a9ff;
   outline: 0;
   box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* styles.css */
+.custom-radio-group .ant-radio-button-wrapper {
+  border: 2px solid #18aeac !important;
+  color: #18aeac;
+
+  flex: 1; /* Allow the buttons to expand to fill available space */
+  text-align: center; /* Center the text inside the buttons */
+}
+
+.custom-radio-group .ant-radio-button-wrapper:hover {
+  color: #18aeac !important;
+}
+
+.custom-radio-group .ant-radio-button-wrapper-checked {
+  background-color: #18aeac !important;
+  border-color: #18aeac !important;
+  color: white !important;
+}
+
+.custom-radio-group .ant-radio-button-wrapper-checked:hover {
+  background-color: #16a6a0 !important;
+  border-color: #16a6a0 !important;
 }
