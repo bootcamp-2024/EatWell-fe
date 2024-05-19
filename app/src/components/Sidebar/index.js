@@ -40,7 +40,7 @@ const Sidebar = () => {
         navigate("/meal/calendar");
         break;
       case "4":
-        navigate("/meal/omr");
+        navigate("/meal/recognition");
         break;
       case "5":
         navigate("/meal/settings/userInformation");
