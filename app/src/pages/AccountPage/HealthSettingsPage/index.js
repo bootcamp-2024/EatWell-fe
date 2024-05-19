@@ -21,13 +21,15 @@ import mealService from "api/meal";
 
 const { Option } = Select;
 
-const Survey = () => {
-  const { account, fetchAccount } = useContext(AccountContext);
+const HealthSettingsPage = () => {
+  const { account, preferences, fetchAccount, fetchPreferences } =
+    useContext(AccountContext);
   let [isLoading, setIsLoading] = useState(false);
   let [error, setError] = useState("");
   let [bmi, setBmi] = useState("");
   let [bmr, setBmr] = useState("");
-  let [allergies, setAllergies] = useState([]);
+  let [allergies, setAllergies] = useState(preferences.allergies || []);
+
   let [cuisine, setCuisine] = useState("Vietnamese");
   let [height, setHeight] = useState("");
   let [weight, setWeight] = useState("");
@@ -68,6 +70,7 @@ const Survey = () => {
   useEffect(() => {
     fetchIngredients();
     fetchAccount();
+    fetchPreferences();
   }, []);
 
   const handleClose = (removedTag) => {
@@ -231,9 +234,8 @@ const Survey = () => {
 
   return (
     <div className="d-flex container flex-column justify-content-center my-4">
-      <p style={{ fontWeight: "700", color: "red", fontSize: "20px" }}>
-        Vui lòng nhập các thông tin cần thiết để chúng tôi hiểu thêm về tình
-        trạng của bạn hơn!
+      <p style={{ fontWeight: "700", color: "#e65c00", fontSize: "20px" }}>
+        CẬP NHẬT CÁC CHỈ SỐ SỨC KHỎE
       </p>
       <div style={{ width: "100%", borderBottom: "1px solid #eeeeee" }} />
       <div />
@@ -251,9 +253,22 @@ const Survey = () => {
         <div className="calorieCalcHeight">
           <Input
             type="number"
-            placeholder="Nhập chiều cao của bạn"
+            // placeholder={
+            //   preferences.healthRecords
+            //     ? preferences.healthRecords[
+            //         preferences.healthRecords.length - 1
+            //       ].height
+            //     : ""
+            // }
             addonAfter="cm"
             size="large"
+            defaultValue={
+              preferences.healthRecords
+                ? preferences.healthRecords[
+                    preferences.healthRecords.length - 1
+                  ].height
+                : ""
+            }
             onChange={handleHeightChange}
           />
         </div>
@@ -273,6 +288,12 @@ const Survey = () => {
           placeholder="Nhập cân nặng của bạn"
           addonAfter="kg"
           size="large"
+          defaultValue={
+            preferences.healthRecords
+              ? preferences.healthRecords[preferences.healthRecords.length - 1]
+                  .weight
+              : ""
+          }
           onChange={handleWeightChange}
         />
       </div>
@@ -578,4 +599,4 @@ const Survey = () => {
   );
 };
 
-export default Survey;
+export default HealthSettingsPage;

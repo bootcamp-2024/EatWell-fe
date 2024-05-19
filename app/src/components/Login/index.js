@@ -9,13 +9,17 @@ import { validateEmail } from "utils/validator";
 import { AccountContext } from "stores/AccountContext";
 
 const Login = () => {
-  const { login, preferences } = useContext(AccountContext);
+  const { login, preferences, fetchAccount } = useContext(AccountContext);
   const { state } = useLocation();
   const navigator = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState();
+
+  useEffect(() => {
+    fetchAccount();
+  }, []);
 
   const validateFields = (email, password) => {
     if (!email) {
@@ -60,7 +64,13 @@ const Login = () => {
         switch (exitcode) {
           case 0: {
             login(token);
-            navigator(state?.path || "/");
+
+            if (!preferences.height && !preferences.weight) {
+              navigator("/survey");
+            } else {
+              navigator("/meal");
+            }
+
             break;
           }
           case 101: {
@@ -91,14 +101,14 @@ const Login = () => {
 
     const result = await authApi.googleLogin(credential);
     const { exitcode, token } = result.data;
-
+    console.log(token);
     if (exitcode === 0) {
-      login(token);
-      if (!preferences || (!preferences.height && !preferences.weight)) {
+      if (!preferences) {
         navigator("/survey");
       } else {
-        navigator("/meal");
+        navigator("/meal/proposed-menu");
       }
+      login(token);
     } else {
       setError(result.data);
     }
