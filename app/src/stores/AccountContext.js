@@ -1,8 +1,8 @@
 import { createContext } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import accountApi from "api/account";
 import storageService from "stores/storage";
+import accountService from "api/account";
 
 export const AccountContext = createContext();
 
@@ -13,25 +13,39 @@ export const AccountProvider = ({ children }) => {
 
   useEffect(() => {
     fetchAccount();
+    fetchPreferences();
   }, [isLogin]); //eslint-disable-line
 
   const fetchAccount = async () => {
     if (!isLogin) return;
 
     try {
-      const response = await accountApi.getInformation();
-      const { exitcode, account, preferences } = response.data;
+      const response = await accountService.getInformation();
+      const { exitcode, account } = response.data;
       console.log(account);
-      console.log(preferences);
+
       if (exitcode === 0) {
         setAccount(account);
-        setPreferences(preferences);
       }
     } catch (err) {
       console.error(err);
     }
   };
 
+  const fetchPreferences = async () => {
+    if (!isLogin) return;
+
+    try {
+      const response = await accountService.getPreferences();
+      const { exitcode, preferences } = response.data;
+      console.log(preferences);
+      if (exitcode === 0) {
+        setPreferences(preferences);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const login = (token) => {
     storageService.setAccessToken(token);
     setIsLogin(true);
@@ -50,6 +64,7 @@ export const AccountProvider = ({ children }) => {
         account,
         preferences,
         fetchAccount,
+        fetchPreferences,
         login,
         logout,
       }}

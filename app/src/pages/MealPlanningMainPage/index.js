@@ -10,6 +10,7 @@ import AccountPage from "pages/AccountPage";
 import Recognition from "components/Recognition";
 import Calendar from "components/Calendar";
 import MenuList from "components/MenuList";
+import MenuSuggestionPage from "pages/MenuSuggestionPage";
 const { Sider, Header, Content } = Layout;
 
 const MealPlanningMainPage = () => {
@@ -39,6 +40,11 @@ const MealPlanningMainPage = () => {
         <Content className="content">
           <Routes>
             <Route path="/analysis" element={<Analysis />} />
+            <Route
+              exact
+              path="/proposed-menu"
+              element={<MenuSuggestionPage />}
+            />
             {/* <Route exact path="/menus" element={<MenuList />} /> */}
             <Route path="/recognition" element={<Recognition />} />
             <Route exact path="/calendar" element={<MenuList />} />

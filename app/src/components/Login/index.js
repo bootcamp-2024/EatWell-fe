@@ -106,7 +106,7 @@ const Login = () => {
       if (!preferences) {
         navigator("/survey");
       } else {
-        navigator("/meal");
+        navigator("/meal/proposed-menu");
       }
       login(token);
     } else {

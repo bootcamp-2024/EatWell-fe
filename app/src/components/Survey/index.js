@@ -4,9 +4,17 @@ import { useNavigate } from "react-router-dom";
 import accountService from "api/account";
 import swal from "sweetalert2";
 import { AccountContext } from "stores/AccountContext";
-import { calculateAge, calculateBMR } from "utils/calculate";
+import {
+  calculateAge,
+  calculateBMR,
+  calculateNutritionPerDay,
+} from "utils/calculate";
 import { PlusOutlined } from "@ant-design/icons";
 import "./style.css";
+import { LogoutOutlined } from "@ant-design/icons";
+import nonVeganLogo from "images/non-vegan-logo.png";
+import veganLogo from "images/vegan-logo.png";
+import { Col, Row } from "antd";
 import formatter from "utils/formatter";
 import CurrencyInput from "react-currency-input-field";
 import mealService from "api/meal";
@@ -14,22 +22,26 @@ import mealService from "api/meal";
 const { Option } = Select;
 
 const Survey = () => {
-  const { account } = useContext(AccountContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [bmi, setBmi] = useState([]);
-  const [bmr, setBmr] = useState([]);
-  const [allergies, setAllergies] = useState([]);
-  const [cuisine, setCuisine] = useState("Vietnamese");
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [activityLevel, setActivityLevel] = useState("sedentary");
-  const [suggestedCalories, setSuggestedCalories] = useState(0);
-  const [ingredients, setIngredients] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [dataSource, setDataSource] = useState([]);
-  const [searchTermVisible, setSearchTermVisible] = useState(false);
+  const { account, fetchAccount } = useContext(AccountContext);
+  let [isLoading, setIsLoading] = useState(false);
+  let [error, setError] = useState("");
+  let [bmi, setBmi] = useState("");
+  let [bmr, setBmr] = useState("");
+  let [allergies, setAllergies] = useState([]);
+  let [cuisine, setCuisine] = useState("Vietnamese");
+  let [height, setHeight] = useState("");
+  let [weight, setWeight] = useState("");
+  let [bodyGoal, setBodyGoal] = useState("lose-weight");
+  let [tags, setTags] = useState("non-vegan");
+  // const [mealsPerDay, setMealsPerDay] = useState({ breakfast: 0, lunch: 0, snack: 0, dinner: 0 , evening:0});
+  let [nutritionPerDay, setNutritionPerDay] = useState({});
+  let [activityLevel, setActivityLevel] = useState("sedentary");
+  let [suggestedCalories, setSuggestedCalories] = useState(0);
+  let [ingredients, setIngredients] = useState([]);
+  let [searchTerm, setSearchTerm] = useState("");
+  let [dataSource, setDataSource] = useState([]);
+  let [searchTermVisible, setSearchTermVisible] = useState(false);
+  const [selectedTag, setSelectedTag] = useState(null);
 
   const navigator = useNavigate();
 
@@ -55,6 +67,7 @@ const Survey = () => {
 
   useEffect(() => {
     fetchIngredients();
+    fetchAccount();
   }, []);
 
   const handleClose = (removedTag) => {
@@ -71,33 +84,43 @@ const Survey = () => {
     filterIngredients(value);
   };
 
+  const handleTagsChange = (e) => {
+    const value = e.currentTarget.getAttribute("value");
+    setSelectedTag(value);
+  };
+
+  const getBackgroundColor = (tag) => {
+    return selectedTag === tag ? "#cceeff" : "transparent";
+  };
+
   const handleSearchTermConfirm = (value) => {
     if (value && !allergies.includes(value.trim())) {
       setAllergies([...allergies, value.trim()]);
     }
+    console.log(allergies);
     setSearchTermVisible(false);
     setSearchTerm("");
   };
 
-  const handleMaxPriceChange = (value) => {
-    setMaxPrice(value);
+  const handleBodyGoalChange = (e) => {
+    setBodyGoal(e.target.value);
   };
 
-  const handleWeightChange = (value) => {
-    setWeight(value);
+  const handleWeightChange = (e) => {
+    setWeight(parseInt(e.target.value));
   };
 
-  const handleHeightChange = (value) => {
-    setHeight(value);
+  const handleHeightChange = (e) => {
+    setHeight(parseInt(e.target.value));
   };
-
   const handleActivityLevelChange = (value) => {
     setActivityLevel(value);
   };
 
-  const calculateCalories = () => {
+  const calculateCaloriesAndNutrition = () => {
     const age = calculateAge(account.dateOfBirth);
     const bmrResult = calculateBMR(account.gender, weight, height, age);
+
     const bmiResult = weight / ((height * height) / 10000);
     setBmi(bmiResult);
     setBmr(bmrResult);
@@ -120,8 +143,36 @@ const Survey = () => {
         break;
     }
     suggestedCaloriesResult = Math.round(suggestedCaloriesResult);
+
     setSuggestedCalories(suggestedCaloriesResult);
+    const breakfastCalories = suggestedCaloriesResult * 0.25;
+    const lunchCalories = suggestedCaloriesResult * 0.35;
+    const dinnerCalories = suggestedCaloriesResult * 0.3;
+    // Tính toán chỉ số dinh dưỡng cho cả ngày
+
+    const protein =
+      (breakfastCalories * 0.15) / 4 +
+      (lunchCalories * 0.2) / 4 +
+      (dinnerCalories * 0.2) / 4;
+
+    const fat =
+      (breakfastCalories * 0.25) / 9 +
+      (lunchCalories * 0.3) / 9 +
+      (dinnerCalories * 0.3) / 9;
+    const carbohydrat =
+      (breakfastCalories * 0.6) / 4 +
+      (lunchCalories * 0.5) / 4 +
+      (dinnerCalories * 0.5) / 4;
+    const fiber = 10 + 15 + 10;
+
+    setNutritionPerDay({
+      protein: Math.round(protein),
+      fat: Math.round(fat),
+      carbohydrat: Math.round(carbohydrat),
+      fiber: Math.round(fiber),
+    });
   };
+  // const mealOptions = Array.from({ length: 4 }, (_, index) => ({ label: `${index}`, value: index }));
 
   const onSubmit = async () => {
     try {
@@ -130,17 +181,20 @@ const Survey = () => {
         cuisine &&
         height &&
         weight &&
-        maxPrice &&
+        bodyGoal &&
+        nutritionPerDay &&
         activityLevel &&
         suggestedCalories
       ) {
         const entity = {
-          allergies,
-          cuisine,
           height,
           weight,
-          maxPrice,
+          cuisine,
+          allergies,
+          tags,
+          bodyGoal,
           activityLevel,
+          nutritionPerDay,
           suggestedCalories,
           BMI: bmi,
           BMR: bmr,
@@ -159,7 +213,7 @@ const Survey = () => {
             icon: "success",
             confirmButtonText: "OK",
           });
-          navigator("/meal/suggest");
+          navigator("/meal/proposed-menu");
         } else {
           setError(message);
         }
@@ -223,43 +277,132 @@ const Survey = () => {
         />
       </div>
 
-      {/* <div style={{ width: "40%" }}>
+      <div
+        className="calorie-calc-row"
+        style={{ marginBottom: "5px", width: "40%" }}
+      >
         <div>
-          <label
+          <div
+            className="calorie-calc-field-text"
             style={{ marginBottom: "5px", display: "block", fontWeight: "600" }}
           >
-            Thực phẩm dị ứng
-          </label>
+            Mục tiêu cân nặng
+          </div>
+          <Radio.Group
+            className="custom-radio-group"
+            size="large"
+            buttonStyle="solid"
+            defaultValue="b"
+            onChange={handleBodyGoalChange}
+            style={{ color: "#18AEAC", fontWeight: "600" }}
+          >
+            <Radio.Button value="lose-weight">Giảm cân</Radio.Button>
+            <Radio.Button value="maintain">Duy trì</Radio.Button>
+            <Radio.Button value="increase-weight">Tăng cân</Radio.Button>
+          </Radio.Group>
         </div>
-        {Array.isArray(allergies) &&
-          allergies.map((allergy) => (
-            <Tag
-              key={allergy}
-              closable
-              onClose={() => handleRemoveAllergy(allergy)}
-              style={{
-                marginBottom: "5px",
-                marginRight: "5px",
-                height: "25px",
-                borderRadius: "5px",
-                backgroundColor: "#18AEAC",
-                color: "#ffff",
-                fontWeight: "600",
-                boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              {allergy}
-            </Tag>
-          ))}
+      </div>
+
+      <div
+        className="calorie-calc-row"
+        style={{ marginBottom: "5px", width: "40%" }}
+      >
+        <div>
+          <div
+            className="calorie-calc-field-text"
+            style={{ marginBottom: "5px", display: "block", fontWeight: "600" }}
+          >
+            Chế độ ăn
+          </div>
+
+          <div
+            style={{
+              padding: "20px",
+              backgroundColor: "#f5f5f5",
+              borderRadius: "5px",
+              maxWidth: "400px",
+              margin: "0 auto",
+            }}
+          >
+            <Row gutter={16} justify="space-between" align="middle">
+              <Col>
+                <a
+                  value="vegan"
+                  onClick={handleTagsChange}
+                  style={{
+                    textDecoration: "none",
+                    color: "#18AEAC",
+                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
+                    backgroundColor: getBackgroundColor("vegan"),
+                    padding: "5px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <img
+                    src={veganLogo}
+                    alt="Ăn chay"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      marginRight: "10px",
+                    }}
+                  />
+                  Ăn chay
+                </a>
+              </Col>
+              <Col>
+                <a
+                  value="non-vegan"
+                  onClick={handleTagsChange}
+                  style={{
+                    textDecoration: "none",
+                    color: "#18AEAC",
+                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
+                    backgroundColor: getBackgroundColor("non-vegan"),
+                    padding: "5px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <img
+                    src={nonVeganLogo}
+                    alt="Không ăn chay"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      marginRight: "10px",
+                    }}
+                  />
+                  Không ăn chay
+                </a>
+              </Col>
+            </Row>
+          </div>
+        </div>
+      </div>
+      {/* 
+      <div
+        className="calorie-calc-row"
+        style={{ marginBottom: "5px", width: "40%" }}
+      >
+        <div
+          className="calorie-calc-field-text"
+          style={{ marginBottom: "5px", display: "block", fontWeight: "600" }}
+        >
+          Số bữa ăn
+        </div>
         <Input
-          type="text"
+          type="number"
+          placeholder="Nhập cân nặng của bạn"
+          addonAfter="kg"
           size="large"
-          value={allergyInput}
-          onChange={handleAllergyInputChange}
-          onPressEnter={handlePressEnter}
-          placeholder="Nhập thực phẩm bạn dị ứng"
+          onChange={handleWeightChange}
         />
       </div> */}
+
       <div style={{ width: "40%" }}>
         <div>
           <label
@@ -329,36 +472,6 @@ const Survey = () => {
         </div>
       </div>
 
-      {/* <div>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <ul>
-          {filterIngredients().map((ingredient, index) => (
-            <li key={index}>{ingredient}</li>
-          ))}
-        </ul>
-      </div> */}
-
-      <div style={{ marginBottom: "5px", width: "40%" }}>
-        <label style={{ display: "block", fontWeight: "600" }}>
-          Max Price{" "}
-        </label>
-
-        <CurrencyInput
-          className="custom-currency-input"
-          placeholder="Nhập số tiền tối đa"
-          allowDecimals={true}
-          decimalsLimit={2}
-          prefix="VNĐ   "
-          value={maxPrice}
-          onValueChange={handleMaxPriceChange}
-          style={{ borderColor: "GrayText" }}
-        />
-      </div>
       <div
         className="calorieCalcRow"
         style={{ marginBottom: "5px", width: "40%" }}
@@ -420,7 +533,7 @@ const Survey = () => {
           className="primary-btn bg-key secondary-btn"
           type="primary"
           size="large"
-          onClick={calculateCalories}
+          onClick={calculateCaloriesAndNutrition}
           loading={isLoading}
           disabled={isLoading}
           // style={{ backgroundColor: "#ff6600" }}

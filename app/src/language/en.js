@@ -6,7 +6,7 @@ const engLang = {
     suggestedMenu: "Menu Suggestion",
     analysis: "Analysis",
     calendar: "Calendar",
-    recognition: "recognition",
+    recognition: "Recognition",
     setting: "Settings",
     logout: "Logout",
   },
