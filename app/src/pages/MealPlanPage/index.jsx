@@ -9,18 +9,18 @@ import HomePage from 'pages/HomePage';
 import ServerError from 'components/ServerError';
 import NotFound from 'components/NotFound';
 import SignUp from 'components/SignUp';
-import Calendar from 'components/Calendar';
+import Mealplan from 'components/MealPlan';
 
-const CalendarPage = () => {
+const MealPlanPage = () => {
   return (
-    <div className="CalendarPage">
+    <div className="MealPlanPage">
       <BrowserRouter>
         <Routes>
-          <Route exact path="/calendar" element={<Calendar />} />
+          <Route exact path="/meal" element={<Mealplan />} />
         </Routes>
       </BrowserRouter>
     </div>
   );
 };
 
-export default CalendarPage;
+export default MealPlanPage;

@@ -1,8 +1,7 @@
 import React from "react";
-import TestPage from "./pages/TestPage";
-import MainPage from "./pages/MainPage";
-import CalendarPage from "pages/CalendarPage";
-import GeneratePage from "pages/GeneratePage";
+import DashboardPage from "./pages/Dashboard";
+import MealPlanPage from "./pages/MealPlanPage";
+
 import config from "./config/config";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AccountProvider } from "stores/AccountContext";
@@ -13,9 +12,8 @@ class App extends React.Component {
       <>
         <AccountProvider>
           <GoogleOAuthProvider clientId={config.GOOGLE_CLIENT_ID}>
-            {/* <CalendarPage /> */}
-            <TestPage />
-            {/* <GeneratePage /> */}
+            {/* <DashboardPage /> */}
+            <MealPlanPage/>
           </GoogleOAuthProvider>
         </AccountProvider>
       </>
