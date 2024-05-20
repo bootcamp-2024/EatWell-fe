@@ -31,9 +31,9 @@ const MainPage = () => {
           <Route
             path="/meal/*"
             element={
-              // <PrivateRoute auth={isLogin} redirectTo="/login">
-              <MealPlanningMainPage />
-              // </PrivateRoute>
+              <PrivateRoute auth={isLogin} redirectTo="/login">
+                <MealPlanningMainPage />
+              </PrivateRoute>
             }
           />
           <Route
