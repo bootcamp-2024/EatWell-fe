@@ -28,7 +28,7 @@ const Survey = () => {
   let [bmi, setBmi] = useState("");
   let [bmr, setBmr] = useState("");
   let [allergies, setAllergies] = useState([]);
-  let [cuisine, setCuisine] = useState("Vietnamese");
+  let [cuisine, setCuisine] = useState("All");
   let [height, setHeight] = useState("");
   let [weight, setWeight] = useState("");
   let [bodyGoal, setBodyGoal] = useState("lose-weight");
