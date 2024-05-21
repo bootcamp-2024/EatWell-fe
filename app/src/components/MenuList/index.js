@@ -11,9 +11,9 @@ import {
 } from "@mobiscroll/react";
 import React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import menuApi from "api/menus";
+import mealApi from "api/menus";
 import "@mobiscroll/react/dist/css/mobiscroll.min.css";
-
+import "./style.css"
 setOptions({
   theme: "ios",
   themeVariant: "light",
@@ -21,28 +21,28 @@ setOptions({
 
 const types = [
   {
-    id: 1,
+    id: "Breakfast",
     name: "Bữa sáng",
     color: "#e20f0f",
     kcal: "300 - 400 kcal",
     icon: "🍳",
   },
   {
-    id: 2,
+    id: "Lunch",
     name: "Bữa trưa",
     color: "#157d13",
-    kcal: "100 - 200 kcal",
+    kcal: "200 - 400 kcal",
     icon: "🥨",
   },
   {
-    id: 3,
+    id: "Snack",
     name: "Bữa xế",
     color: "#32a6de",
-    kcal: "500 - 700 kcal",
+    kcal: "100 - 200 kcal",
     icon: "🍌",
   },
   {
-    id: 4,
+    id: "Dinner",
     name: "Bữa tối",
     color: "#e29d1d",
     kcal: "400 - 600 kcal",
@@ -66,112 +66,187 @@ const responsivePopup = {
     showOverlay: false,
   },
 };
+const vietnameseWeekdays = {
+  "Monday": "Thứ 2",
+  "Tuesday": "Thứ 3",
+  "Wednesday": "Thứ 4",
+  "Thursday": "Thứ 5",
+  "Friday": "Thứ 6",
+  "Saturday": "Thứ 7",
+  "Sunday": "Chủ Nhật"
+};
 
-function MenuList() {
+const vietnameseMonths = {
+  "January": "Tháng 1",
+  "February": "Tháng 2",
+  "March": "Tháng 3",
+  "April": "Tháng 4",
+  "May": "Tháng 5",
+  "June": "Tháng 6",
+  "July": "Tháng 7",
+  "August": "Tháng 8",
+  "September": "Tháng 9",
+  "October": "Tháng 10",
+  "November": "Tháng 11",
+  "December": "Tháng 12"
+};
+
+const formatDateToVietnamese = (date) => {
+  const options = { day: 'numeric', weekday: 'long', month: 'long', year: 'numeric' };
+  const dateFormatter = new Intl.DateTimeFormat('en-US', options);
+  const dateParts = dateFormatter.formatToParts(date);
+
+  let day = '';
+  let weekday = '';
+  let month = '';
+  let year = '';
+
+  dateParts.forEach(part => {
+    switch (part.type) {
+      case 'day':
+        day = part.value;
+        break;
+      case 'weekday':
+        weekday = vietnameseWeekdays[part.value];
+        break;
+      case 'month':
+        month = vietnameseMonths[part.value];
+        break;
+      case 'year':
+        year = part.value;
+        break;
+      default:
+        break;
+    }
+  });
+
+  return `${day} ${weekday} ${month} ${year}`;
+};
+function App() {
   const [myMeals, setMyMeals] = useState([]);
   const [tempMeal, setTempMeal] = useState(null);
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isEdit, setEdit] = useState(false);
-  const [isDrag, setDrag] = useState(false);
-  const [mealName, setName] = useState("");
-  const [calories, setCalories] = useState("");
-  const [notes, setNotes] = useState("");
+  const [name, setName] = useState("");
+  const [total_calo, settotal_calo] = useState("");
+  const [cuisine, setcuisine] = useState("");
   const [headerText, setHeader] = useState("");
   const [type, setType] = useState(1);
-  const [isSnackbarOpen, setSnackbarOpen] = useState(false);
 
-  // 1
+  const convertMongoDate = (mongoDate) => {
+    // Split the date string into its components
+    const components = mongoDate.split("-");
+  
+    // Extract year, month, and day from the components
+    const year = "20" + components[2];
+    const month = components[1];
+    const day = components[0];
+  
+    // Return the date string in the desired format
+    return `${year}-${month}-${day}T00:00:00.000+00:00`;
+  };
+
   const saveEvent = useCallback(async () => {
-    try {
-      const newEvent = {
-        id: tempMeal.id,
-        mealName: mealName,
-        calories: calories,
-        notes: notes,
-        start: tempMeal.start,
-        resource: tempMeal.resource,
-      };
+  try {
+    // Log the current temporary meal
+    console.log("Temp meal:", tempMeal);
 
-      const updatedMeals = myMeals.map((meal) =>
-        meal.id === tempMeal.id ? { ...meal, ...newEvent } : meal
-      );
+    // Find the meal_day document that contains the meal
+    const mealDay = myMeals.find((mealDay) =>
+      mealDay.meal_plan.some((meal) => meal.name === tempMeal.name)
+    );
 
-      await menuApi.updateMenu(tempMeal.id, newEvent);
+    // Log the found meal day
+    console.log("Found meal day:", mealDay);
 
-      setMyMeals(updatedMeals);
-      setPopupOpen(false);
-      window.location.reload();
-    } catch (error) {
-      console.error("Error saving event:", error);
+    if (!mealDay) {
+      throw new Error("Meal day not found");
     }
-  }, [calories, myMeals, mealName, notes, tempMeal]);
 
-  const handleDragStart = useCallback(() => {
-    setDrag(true);
-  }, []);
+    // Update the specific meal within the meal_plan array
+    const updatedMealPlan = mealDay.meal_plan.map((meal) =>
+      meal.name === tempMeal.name
+        ? {
+            ...meal,
+            name: name,
+            total_calo: total_calo,
+            cuisine: cuisine,
+            meal_time: tempMeal.meal_time,
+          }
+        : meal
+    );
 
-  const handleDragEnd = useCallback(() => {
-    setDrag(false);
-  }, []);
+    // Log the updated meal plan
+    console.log("Updated meal plan:", updatedMealPlan);
 
-  const handleEventDrop = useCallback(
-    async (args) => {
-      if (!isDrag) return;
-      try {
-        const updatedMeals = myMeals.map((meal) =>
-          meal.id === args.event.id ? { ...meal, start: args.newStart } : meal
-        );
-        setMyMeals(updatedMeals);
+    const updatedMealDay = {
+      ...mealDay,
+      meal_plan: updatedMealPlan,
+    };
 
-        await menuApi.updateMenu(args.event.id, {
-          start: args.newStart,
-        });
-      } catch (error) {
-        console.error("Error updating meal date:", error);
-      }
-    },
-    [isDrag, myMeals]
-  );
+    // Log the updated meal day before sending to the server
+    console.log("Updated meal day to be sent:", updatedMealDay);
 
-  // 2 delete
-  const deleteEvent = useCallback(async (event) => {
-    try {
-      await menuApi.deleteMenu(event.id);
-      setMyMeals((prevMeals) =>
-        prevMeals.filter((meal) => meal.id !== event.id)
-      );
-      setSnackbarOpen(true);
-      window.location.reload();
-    } catch (error) {
-      console.error("Error deleting event:", error);
-    }
-  }, []);
+    // Send the updated meal_day to the server
+    await mealApi.updateMenu(mealDay._id, updatedMealDay);
 
-  const loadPopupForm = useCallback((event) => {
-    setName(event.mealName);
-    setCalories(event.calories);
-    setNotes(event.notes);
-  }, []);
+    // Log the response from the server
+    console.log("Successfully updated meal day on server");
+
+    // Update the state with the modified meal_day
+    const updatedMeals = myMeals.map((day) =>
+      day._id === mealDay._id ? updatedMealDay : day
+    );
+
+    setMyMeals(updatedMeals);
+    setPopupOpen(false);
+    window.location.reload();
+  } catch (error) {
+    console.error("Error saving event:", error);
+  }
+}, [total_calo, myMeals, name, cuisine, tempMeal]);
+
+
+
+ // 2 delete
+ const deleteEvent = useCallback(async (event) => {
+  try {
+    await mealApi.deleteMenu(event.id);
+    setMyMeals((prevMeals) => prevMeals.filter((meal) => meal.id !== event.id));
+    window.location.reload();
+  } catch (error) {
+    console.error("Error deleting event:", error);
+  }
+}, []);
+
+
+const loadPopupForm = useCallback((event) => {
+  setName(event.name);
+  settotal_calo(event.total_calo);
+  setcuisine(event.cuisine);
+}, []);
+
 
   // allow user to edit
   const nameChange = useCallback((ev) => {
     setName(ev.target.value);
   }, []);
 
-  const caloriesChange = useCallback((ev) => {
-    setCalories(ev.target.value);
+  const total_caloChange = useCallback((ev) => {
+    settotal_calo(ev.target.value);
   }, []);
 
-  const notesChange = useCallback((ev) => {
-    setNotes(ev.target.value);
+  const cuisineChange = useCallback((ev) => {
+    setcuisine(ev.target.value);
   }, []);
+
 
   const onDeleteClick = useCallback(() => {
     deleteEvent(tempMeal);
     setPopupOpen(false);
   }, [deleteEvent, tempMeal]);
 
-  // scheduler options
+
   const handleEventClick = useCallback(
     (args) => {
       const event = args.event;
@@ -184,14 +259,16 @@ function MenuList() {
     [loadPopupForm]
   );
 
+
   const typeChange = useCallback(
     (ev) => {
       const value = +ev.target.value;
       setType(value);
-      setTempMeal({ ...tempMeal, resource: value });
+      setTempMeal({ ...tempMeal, meal_time: value });
     },
     [tempMeal]
   );
+
 
   const handleEventDeleted = useCallback(
     (args) => {
@@ -200,24 +277,23 @@ function MenuList() {
     [deleteEvent]
   );
 
-  // popup options
-  const popupButtons = useMemo(() => {
-    if (isEdit) {
-      return [
-        "cancel",
-        {
-          handler: () => {
-            saveEvent();
-          },
-          keyCode: "enter",
-          text: "Save",
-          cssClass: "mbsc-popup-button-primary",
-        },
-      ];
-    } else {
-      return [];
-    }
-  }, [isEdit, saveEvent]);
+  // const popupButtons = useMemo(() => {
+  //   if (isEdit) {
+  //     return [
+  //       "cancel",
+  //       {
+  //         handler: () => {
+  //           saveEvent();
+  //         },
+  //         keyCode: "enter",
+  //         text: "Save",
+  //         cssClass: "mbsc-popup-button-primary",
+  //       },
+  //     ];
+  //   } else {
+  //     return [];
+  //   }
+  // }, [isEdit, saveEvent]);
 
   const onPopupClose = useCallback(() => {
     setPopupOpen(false);
@@ -238,64 +314,66 @@ function MenuList() {
 
   const myScheduleEvent = useCallback((args) => {
     const event = args.original;
-
     return (
       <div className="md-meal-planner-event">
         <div className="md-meal-planner-event-title">
-          {event.mealName} {event.calories && ` - ${event.calories} kcal`}
+          {event.name}
         </div>
       </div>
     );
   }, []);
 
-  const handleSnackbarClose = useCallback(() => {
-    setSnackbarOpen(false);
-  }, []);
-
   useEffect(() => {
-    async function fetchMenus() {
+    async function fetchMeals() {
       try {
-        const menuData = await menuApi.getAllMenus();
-        setMyMeals(menuData);
+        const menuData = await mealApi.getAllMenus();
+        const parsedMenuData = menuData.map((meal) => ({
+          ...meal,
+          meal_day: convertMongoDate(meal.meal_day),
+        }));
+        setMyMeals(parsedMenuData);
+        console.log(parsedMenuData);
       } catch (error) {
         console.error("Error fetching menus:", error);
       }
     }
-    fetchMenus();
+    fetchMeals();
   }, []);
+
 
   return (
     <div>
       <Eventcalendar
         view={viewSettings}
-        data={myMeals.map((meal) => ({
-          id: meal._id,
-          mealName: meal.mealName,
-          start: meal.start,
-          resource: meal.resource,
-          notes: meal.notes,
-          calories: meal.calories,
-        }))}
+        data={myMeals.flatMap((meal) =>
+          meal.meal_plan.map((submeal) => ({
+            id: submeal._id,
+            start: new Date(meal.meal_day),
+            name: submeal.name,
+            total_calo: submeal.total_calo,
+            cuisine: submeal.cuisine,
+            resource: submeal.meal_time,
+          }))
+        )}
+        
         resources={types}
         dragToCreate={false}
         dragToResize={false}
         dragToMove={true}
-        clickToCreate={false} // Disable click to create new event
+        clickToCreate={false}
         onEventClick={handleEventClick}
         onEventDeleted={handleEventDeleted}
-        onEventDragStart={handleDragStart}
-        onEventDragEnd={handleDragEnd}
-        onEventDrop={handleEventDrop}
         renderResource={renderMyResource}
         renderScheduleEventContent={myScheduleEvent}
         cssClass="md-meal-planner-calendar"
+        dateFormatter={formatDateToVietnamese} 
       />
       <Popup
         display="bottom"
         fullScreen={true}
         contentPadding={false}
         headerText={headerText}
-        buttons={popupButtons}
+        // buttons={popupButtons}
         isOpen={isPopupOpen}
         onClose={onPopupClose}
         responsive={responsivePopup}
@@ -309,11 +387,11 @@ function MenuList() {
           ))}
         </SegmentedGroup>
         <div className="mbsc-form-group">
-          <Input label="Name" value={mealName} onChange={nameChange} />
-          <Input label="Calories" value={calories} onChange={caloriesChange} />
-          <Textarea label="Notes" value={notes} onChange={notesChange} />
+          <Input label="Tên món ăn" value={name} onChange={nameChange} />
+          <Input label="Năng lượng" value={total_calo} onChange={total_caloChange} />
+          <Textarea label="Ẩm thực" value={cuisine} onChange={cuisineChange} />
         </div>
-        {isEdit && (
+        {/* {isEdit && (
           <div className="mbsc-button-group">
             <Button
               className="mbsc-button-block"
@@ -324,10 +402,10 @@ function MenuList() {
               Xóa bữa ăn
             </Button>
           </div>
-        )}
+        )} */}
       </Popup>
     </div>
   );
 }
 
-export default MenuList;
+export default App;
