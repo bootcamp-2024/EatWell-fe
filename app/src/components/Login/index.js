@@ -65,10 +65,10 @@ const Login = () => {
           case 0: {
             login(token);
 
-            if (!preferences.height && !preferences.weight) {
+            if (!preferences) {
               navigator("/survey");
             } else {
-              navigator("/meal");
+              navigator("/meal/proposed-menu");
             }
 
             break;
