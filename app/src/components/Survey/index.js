@@ -28,7 +28,7 @@ const Survey = () => {
   let [bmi, setBmi] = useState("");
   let [bmr, setBmr] = useState("");
   let [allergies, setAllergies] = useState([]);
-  let [cuisine, setCuisine] = useState("Vietnamese");
+  let [cuisine, setCuisine] = useState("All");
   let [height, setHeight] = useState("");
   let [weight, setWeight] = useState("");
   let [bodyGoal, setBodyGoal] = useState("lose-weight");
@@ -486,12 +486,13 @@ const Survey = () => {
         <Select
           className="calorieCalcField"
           name="cuisine"
-          defaultValue="Vietnamese"
+          defaultValue="All"
           size="large"
           style={{ minWidth: "100%" }}
           value={cuisine}
           onChange={(value) => setCuisine(value)}
         >
+          <Option value="All">Tất cả</Option>
           <Option value="Vietnamese">Việt Nam</Option>
           <Option value="Chinese">Trung Quốc</Option>
           <Option value="Thai">Thái Lan</Option>
