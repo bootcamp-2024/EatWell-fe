@@ -20,6 +20,7 @@ const MealPlanningMainPage = () => {
     <Layout>
       <Sider
         theme="light"
+        width="15%"
         trigger={null}
         collapsible
         collapsed={collapsed}

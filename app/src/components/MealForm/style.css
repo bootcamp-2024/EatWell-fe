@@ -95,3 +95,35 @@
   max-width: 200px;
   border-color: #18aeac;
 }
+
+.form-container {
+  border-radius: 30px !important; /* Bo tròn góc */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3) !important; /* Hiệu ứng đổ bóng */
+  padding: 20px !important; /* Khoảng cách giữa nội dung và viền */
+}
+
+.divider {
+  margin: 30px 0 !important;
+  width: 100% !important;
+  height: 2px !important;
+  background-color: rgba(14, 13, 13, 0.3) !important;
+  border: none !important;
+  clear: both !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important; /* Thêm hiệu ứng đổ bóng */
+}
+
+.info-button {
+  width: 24px; /* Độ rộng của vòng tròn */
+  height: 24px; /* Chiều cao của vòng tròn */
+  border-radius: 50%; /* Bo tròn để tạo thành hình tròn */
+  background: rgba(0, 0, 0, 0.1); /* Màu nền mờ */
+  display: flex; /* Sử dụng flex để căn giữa chữ "i" */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  border: none; /* Bỏ đường viền */
+  cursor: pointer; /* Thay đổi con trỏ khi hover */
+}
+
+.info-button:hover {
+  background: rgba(0, 0, 0, 0.2); /* Thay đổi màu nền khi hover */
+}
