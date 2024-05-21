@@ -142,28 +142,26 @@ const Survey = () => {
       default:
         break;
     }
+
+    switch (bodyGoal) {
+      case "increase-weight":
+        suggestedCaloriesResult = suggestedCaloriesResult + 300;
+        break;
+      case "lose-weight":
+        suggestedCaloriesResult = suggestedCaloriesResult - 300;
+        break;
+      default:
+        break;
+    }
     suggestedCaloriesResult = Math.round(suggestedCaloriesResult);
 
     setSuggestedCalories(suggestedCaloriesResult);
-    const breakfastCalories = suggestedCaloriesResult * 0.25;
-    const lunchCalories = suggestedCaloriesResult * 0.35;
-    const dinnerCalories = suggestedCaloriesResult * 0.3;
     // Tính toán chỉ số dinh dưỡng cho cả ngày
 
-    const protein =
-      (breakfastCalories * 0.15) / 4 +
-      (lunchCalories * 0.2) / 4 +
-      (dinnerCalories * 0.2) / 4;
-
-    const fat =
-      (breakfastCalories * 0.25) / 9 +
-      (lunchCalories * 0.3) / 9 +
-      (dinnerCalories * 0.3) / 9;
-    const carbohydrat =
-      (breakfastCalories * 0.6) / 4 +
-      (lunchCalories * 0.5) / 4 +
-      (dinnerCalories * 0.5) / 4;
-    const fiber = 10 + 15 + 10;
+    const protein = suggestedCaloriesResult / 20;
+    const fat = suggestedCaloriesResult / 20;
+    const carbohydrat = suggestedCaloriesResult / 8;
+    const fiber = 30;
 
     setNutritionPerDay({
       protein: Math.round(protein),
