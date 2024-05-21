@@ -31,14 +31,14 @@ const types = [
     id: "Lunch",
     name: "Bữa trưa",
     color: "#157d13",
-    kcal: "100 - 200 kcal",
+    kcal: "200 - 400 kcal",
     icon: "🥨",
   },
   {
     id: "Snack",
     name: "Bữa xế",
     color: "#32a6de",
-    kcal: "500 - 700 kcal",
+    kcal: "100 - 200 kcal",
     icon: "🍌",
   },
   {
@@ -277,23 +277,23 @@ const loadPopupForm = useCallback((event) => {
     [deleteEvent]
   );
 
-  const popupButtons = useMemo(() => {
-    if (isEdit) {
-      return [
-        "cancel",
-        {
-          handler: () => {
-            saveEvent();
-          },
-          keyCode: "enter",
-          text: "Save",
-          cssClass: "mbsc-popup-button-primary",
-        },
-      ];
-    } else {
-      return [];
-    }
-  }, [isEdit, saveEvent]);
+  // const popupButtons = useMemo(() => {
+  //   if (isEdit) {
+  //     return [
+  //       "cancel",
+  //       {
+  //         handler: () => {
+  //           saveEvent();
+  //         },
+  //         keyCode: "enter",
+  //         text: "Save",
+  //         cssClass: "mbsc-popup-button-primary",
+  //       },
+  //     ];
+  //   } else {
+  //     return [];
+  //   }
+  // }, [isEdit, saveEvent]);
 
   const onPopupClose = useCallback(() => {
     setPopupOpen(false);
@@ -373,7 +373,7 @@ const loadPopupForm = useCallback((event) => {
         fullScreen={true}
         contentPadding={false}
         headerText={headerText}
-        buttons={popupButtons}
+        // buttons={popupButtons}
         isOpen={isPopupOpen}
         onClose={onPopupClose}
         responsive={responsivePopup}
@@ -391,7 +391,7 @@ const loadPopupForm = useCallback((event) => {
           <Input label="Năng lượng" value={total_calo} onChange={total_caloChange} />
           <Textarea label="Ẩm thực" value={cuisine} onChange={cuisineChange} />
         </div>
-        {isEdit && (
+        {/* {isEdit && (
           <div className="mbsc-button-group">
             <Button
               className="mbsc-button-block"
@@ -402,7 +402,7 @@ const loadPopupForm = useCallback((event) => {
               Xóa bữa ăn
             </Button>
           </div>
-        )}
+        )} */}
       </Popup>
     </div>
   );
