@@ -388,7 +388,7 @@ const MealForm = () => {
                 style={{
                   border: "2px solid transparent",
                   transition: "border-color 0.3s ease",
-                  margin: "5px",
+                  margin: "10px",
                   padding: "10px",
                   borderRadius: "5px",
                 }}
@@ -425,6 +425,7 @@ const MealForm = () => {
                       display: "block",
                       fontSize: "20",
                       color: "#65656E",
+                      marginTop: "10px",
                     }}
                   >
                     {capitalizeWords2(meal.category)}

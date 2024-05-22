@@ -1,0 +1,20 @@
+.recipe-card {
+  border: 2px solid transparent;
+  transition: border-color 0.3s ease;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 20px;
+  box-shadow: 0 0 5px #18aeac;
+}
+
+.recipe-card:hover {
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+.navigation-buttons {
+  display: flex;
+}
+
+.nav-button {
+  margin: 0 5px;
+}

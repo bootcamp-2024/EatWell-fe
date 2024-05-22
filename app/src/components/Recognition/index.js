@@ -1,239 +1,213 @@
-import React, { useState } from "react";
-import { Container, Row, Col, Form, Button, Card, ListGroup, Pagination } from "react-bootstrap";
-import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import React, { useEffect, useState } from "react";
+import { Upload, Button, message, Avatar, Card, Carousel, Spin } from "antd";
+import { LeftOutlined, RightOutlined, UploadOutlined } from "@ant-design/icons";
+import detectService from "api/detect";
+import Meta from "antd/es/card/Meta";
+import "./style.css";
 
-const fakeRecipes = [
-    {
-      name: "Ro tel with cheese",
-      ingredients: [
-        "1 bottle 450g ore ida cheese, cut into 24 pieces",
-        "1/2 bottle 125ml port clam sauce",
-      ],
-      instructions: [
-        "Combine cheese and port in a saucepan.",
-        "Cook over medium low heat until melted, about 1 minute.",
-        "Season with salt and pepper.",
-        "To serve, pour a good half pint of ro tel into a glass.",
-        "Top with the cheese sauce.",
-      ],
-    },
-    {
-        name: "Ro tel with cheese",
-        ingredients: [
-          "1 bottle 450g ore ida cheese, cut into 24 pieces",
-          "1/2 bottle 125ml port clam sauce",
-        ],
-        instructions: [
-          "Combine cheese and port in a saucepan.",
-          "Cook over medium low heat until melted, about 1 minute.",
-          "Season with salt and pepper.",
-          "To serve, pour a good half pint of ro tel into a glass.",
-          "Top with the cheese sauce.",
-        ],
-      },
-      {
-        name: "Ro tel with cheese",
-        ingredients: [
-          "1 bottle 450g ore ida cheese, cut into 24 pieces",
-          "1/2 bottle 125ml port clam sauce",
-        ],
-        instructions: [
-          "Combine cheese and port in a saucepan.",
-          "Cook over medium low heat until melted, about 1 minute.",
-          "Season with salt and pepper.",
-          "To serve, pour a good half pint of ro tel into a glass.",
-          "Top with the cheese sauce.",
-        ],
-      },
-      {
-        name: "Ro tel with cheese",
-        ingredients: [
-          "1 bottle 450g ore ida cheese, cut into 24 pieces",
-          "1/2 bottle 125ml port clam sauce",
-        ],
-        instructions: [
-          "Combine cheese and port in a saucepan.",
-          "Cook over medium low heat until melted, about 1 minute.",
-          "Season with salt and pepper.",
-          "To serve, pour a good half pint of ro tel into a glass.",
-          "Top with the cheese sauce.",
-        ],
-      },
-      {
-        name: "Ro tel with cheese",
-        ingredients: [
-          "1 bottle 450g ore ida cheese, cut into 24 pieces",
-          "1/2 bottle 125ml port clam sauce",
-        ],
-        instructions: [
-          "Combine cheese and port in a saucepan.",
-          "Cook over medium low heat until melted, about 1 minute.",
-          "Season with salt and pepper.",
-          "To serve, pour a good half pint of ro tel into a glass.",
-          "Top with the cheese sauce.",
-        ],
-      },
-    {
-      name: "Pasta Primavera",
-      ingredients: [
-        "200g pasta",
-        "1 cup chopped vegetables",
-        "2 tbsp olive oil",
-        "Salt and pepper to taste",
-      ],
-      instructions: [
-        "Cook pasta according to package instructions.",
-        "Sauté vegetables in olive oil until tender.",
-        "Mix pasta and vegetables together.",
-        "Season with salt and pepper.",
-        "Serve warm.",
-      ],
-    },
-    {
-      name: "Chicken Stir Fry",
-      ingredients: [
-        "2 chicken breasts, sliced",
-        "1 bell pepper, sliced",
-        "1 onion, sliced",
-        "3 tbsp soy sauce",
-      ],
-      instructions: [
-        "Heat oil in a pan.",
-        "Add chicken and cook until browned.",
-        "Add vegetables and stir fry for 5 minutes.",
-        "Add soy sauce and cook for another 2 minutes.",
-        "Serve hot with rice.",
-      ],
-    },
-    {
-      name: "Beef Tacos",
-      ingredients: [
-        "500g ground beef",
-        "1 taco seasoning packet",
-        "12 taco shells",
-        "1 cup shredded lettuce",
-        "1 cup diced tomatoes",
-      ],
-      instructions: [
-        "Cook beef in a skillet over medium heat.",
-        "Add taco seasoning and cook according to package instructions.",
-        "Fill taco shells with beef, lettuce, and tomatoes.",
-        "Serve with your favorite toppings.",
-      ],
-    },
-    {
-      name: "Caesar Salad",
-      ingredients: [
-        "1 head romaine lettuce, chopped",
-        "1/2 cup Caesar dressing",
-        "1/4 cup grated Parmesan cheese",
-        "Croutons",
-      ],
-      instructions: [
-        "In a large bowl, toss lettuce with dressing.",
-        "Add Parmesan cheese and croutons.",
-        "Toss to combine.",
-        "Serve immediately.",
-      ],
-    },
-  ];
-
-const Recognition = () => {
-  const [image, setImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
+const Recognition = (props) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [recipeId, setRecipeId] = useState();
+  const [image, setImage] = useState("");
   const [recipes, setRecipes] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const recipesPerPage = 1;
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const handlePrevious = () => {
+    setCurrentSlide((prevSlide) => Math.max(prevSlide - 2, 0));
+  };
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setImage(file);
-      setImageUrl(URL.createObjectURL(file));
-      setRecipes([]);
-      setCurrentPage(0);
+  const handleNext = () => {
+    setCurrentSlide((prevSlide) => Math.min(prevSlide + 2, recipes.length - 2));
+  };
+
+  useEffect(() => {
+    if (recipes.length > 0) {
+      setIsLoading(false);
+    }
+  }, [recipes]);
+
+  const handleGenerate = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await detectService.getGenMealDetectFastApi(recipeId);
+
+      const recipeData = response.data.recipes;
+      console.log(recipeData);
+      setRecipes(recipeData);
+
+      setIsUploading(false);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setIsUploading(false);
+      message.error("Failed to upload image");
     }
   };
 
-  const handleGenerateRecipes = () => {
-    // Update the URL to the new image and set the recipe description
-    setImageUrl("https://res.cloudinary.com/dgtdkbnnq/image/upload/v1716044404/dtka4pqzdjk28rn73fwh.jpg"); // Replace with your desired URL
-    setRecipes(fakeRecipes);
-    setCurrentPage(0);
+  const handleUpload = async (file) => {
+    setIsUploading(true);
+
+    try {
+      const response = await detectService.uploadDetectImage(file);
+
+      const imageUrl = response.data.url;
+      const recipeId = response.data._id;
+      setRecipeId(recipeId);
+      console.log(imageUrl);
+      console.log(recipeId);
+      setImage(imageUrl);
+
+      setIsUploading(false);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setIsUploading(false);
+      message.error("Failed to upload image");
+    }
   };
 
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(recipes.length / recipesPerPage) - 1));
+  const uploadProps = {
+    maxCount: 1,
+    accept: "image/png, image/jpeg",
+    showUploadList: false,
+    beforeUpload: handleUpload,
   };
 
   return (
-    <Container>
-      <Row className="mt-3">
-        <Col md={6}>
-          <h3>Upload Image</h3>
-          <div className="p-2 rounded"  style={{ border: "2px dashed #18aeac" }}>
-            <div className="d-flex justify-content-between align-items-center">
-                <Form.Group controlId="formFileSm" className="">
-                    <Form.Control type="file" size="sm" onChange={handleImageUpload} />
-                </Form.Group>
-                <Button size="sm" style={{ backgroundColor: "#18aeac", borderColor: "#18aeac" }} onClick={handleGenerateRecipes}>
-                    Generate Recipes
-                </Button>
-            </div>
-            {imageUrl && (
-              <div className="mt-3 text-center">
-                <img src={imageUrl} alt="Uploaded" style={{  maxHeight: "500px" }} />
-              </div>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "flex-start",
+      }}
+    >
+      <div>
+        <div
+          className="col-12 d-flex justify-content-center"
+          style={{ marginBottom: "20px" }}
+        >
+          <Upload {...uploadProps}>
+            <Button
+              disabled={isUploading}
+              loading={isUploading}
+              shape="round"
+              size="large"
+              icon={<UploadOutlined />}
+            >
+              Chọn ảnh
+            </Button>
+          </Upload>
+        </div>
+        <div style={{ marginRight: "20px" }}>
+          <div
+            style={{
+              width: "500px",
+              height: "500px",
+              border: "2px solid #18AEAC",
+              borderRadius: "10px",
+              position: "relative",
+            }}
+          >
+            {image && (
+              <img
+                src={image}
+                alt="Uploaded"
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                }}
+              />
             )}
           </div>
-        </Col>
-        <Col md={6}>
-          <h3>Recipes</h3>
-          {recipes.length > 0 && (
-            <>
-              <Card className="rounded" style={{ minHeight: "492px" }}>
-                <Card.Body>
-                  <Card.Title>{recipes[currentPage].name}</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">Ingredients</Card.Subtitle>
-                  <ListGroup variant="flush">
-                    {recipes[currentPage].ingredients.map((ingredient, index) => (
-                      <ListGroup.Item key={index}>{ingredient}</ListGroup.Item>
-                    ))}
-                  </ListGroup>
-                  <Card.Subtitle className="mt-3 mb-2 text-muted">Instructions</Card.Subtitle>
-                  <ListGroup variant="flush">
-                    {recipes[currentPage].instructions.map((instruction, index) => (
-                      <ListGroup.Item key={index}>{instruction}</ListGroup.Item>
-                    ))}
-                  </ListGroup>
-                </Card.Body>
-              </Card>
-              <div className="mt-3 d-flex justify-content-center">
-                <Pagination>
-                  <Pagination.Prev onClick={handlePrevPage} disabled={currentPage === 0} />
-                  {[currentPage - 1, currentPage, currentPage + 1].map((page) => (
-                    page >= 0 && page < Math.ceil(recipes.length / recipesPerPage) && (
-                      <Pagination.Item
-                        key={page}
-                        active={page === currentPage}
-                        onClick={() => setCurrentPage(page)}
-                      >
-                        {page + 1}
-                      </Pagination.Item>
-                    )
+        </div>
+        <div className="col-12 d-flex justify-content-center">
+          <Button
+            className="primary-btn bg-key signup-btn"
+            type="primary"
+            size="large"
+            htmlType="submit"
+            style={{ width: "50%", marginTop: "10px" }}
+            onClick={handleGenerate}
+          >
+            GENERATE RECIPES
+          </Button>
+        </div>
+      </div>
+
+      {!isLoading && recipes?.length > 0 && (
+        <div className="carousel-container" style={{ marginLeft: "8%" }}>
+          {/* Render các recipe */}
+          {recipes
+            .slice(currentSlide, currentSlide + 2)
+            .map((recipe, index) => (
+              <div
+                key={index}
+                className="recipe-card"
+                style={{ width: "500px", height: "300px" }}
+              >
+                <h3
+                  style={{
+                    marginBottom: "5px",
+                    fontWeight: "600",
+                    color: "#18AEAC",
+                  }}
+                >
+                  {recipe.name}
+                </h3>
+                <h4 style={{ color: "#18AEAC" }}>Ingredients:</h4>
+                <ul>
+                  {recipe.ingredients.map((ingredient, i) => (
+                    <li key={i}>{ingredient}</li>
                   ))}
-                  <Pagination.Next onClick={handleNextPage} disabled={currentPage === Math.ceil(recipes.length / recipesPerPage) - 1} />
-                </Pagination>
+                </ul>
+                <h4 style={{ color: "#18AEAC" }}>Instructions:</h4>
+                <ol>
+                  {recipe.instructions.map((instruction, i) => (
+                    <li key={i}>{instruction}</li>
+                  ))}
+                </ol>
               </div>
-            </>
-          )}
-        </Col>
-      </Row>
-    </Container>
+            ))}
+
+          {/* Render nút điều hướng */}
+          <div
+            className="navigation-buttons"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              className="nav-button"
+              onClick={handlePrevious}
+              disabled={currentSlide === 0}
+              icon={<LeftOutlined style={{ color: "#FFFFFF" }} />}
+              style={{
+                backgroundColor: "#18AEAC",
+                marginRight: "10px",
+                display: currentSlide === 0 ? "none" : "inline-block",
+                textAlign: "center",
+              }}
+            />
+            <Button
+              className="nav-button"
+              onClick={handleNext}
+              disabled={currentSlide === recipes.length - 2}
+              icon={<RightOutlined style={{ color: "#FFFFFF" }} />}
+              style={{
+                backgroundColor: "#18AEAC",
+                marginLeft: "10px",
+                display:
+                  currentSlide === recipes.length - 2 ? "none" : "inline-block",
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

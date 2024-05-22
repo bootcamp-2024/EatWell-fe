@@ -8,7 +8,7 @@ import Analysis from "components/Analysis";
 import { Route, Routes } from "react-router-dom";
 import AccountPage from "pages/AccountPage";
 import Recognition from "components/Recognition";
-import Calendar from "components/Calendar";
+
 import MenuList from "components/MenuList";
 import MenuSuggestionPage from "pages/MenuSuggestionPage";
 const { Sider, Header, Content } = Layout;
